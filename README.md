@@ -4,7 +4,7 @@
 
 # Social Media Skills for AI Agents
 
-The complete set of Claude skills behind Charlie Hills' content system. 350k+ followers across LinkedIn, Instagram, Substack, X and YouTube. 100m+ views per year. All running through one system that starts with the newsletter and flows out to every other channel.
+The complete set of Claude skills behind Charlie Hills' content system. 415k+ followers across LinkedIn, Instagram, Substack, X and YouTube. 100m+ views per year. All running through one system that starts with the newsletter and flows out to every other channel.
 
 Built by [Charlie Hills](https://charliehills.substack.com). Subscribe to the [MarTech AI newsletter](https://charliehills.substack.com) for weekly breakdowns of how this system works in practice.
 
@@ -71,6 +71,7 @@ See each skill's `SKILL.md` for trigger phrases, inputs, and dependencies.
 | [gemini-carousel](skills/gemini-carousel/) | Slide-by-slide carousel generator with an approval gate. |
 | [quote-post](skills/quote-post/) | Claude writes the quote, Gemini recreates the image with the quote baked in. |
 | [analytics-dashboard](skills/analytics-dashboard/) | LinkedIn Analytics export to interactive React dashboard plus 5 data-backed recommendations. |
+| [exposure-audit](skills/exposure-audit/) | Sweep your own machine for live API keys in cloud-synced folders, secrets in public repo history, and abandoned deployments. Scopes first, never prints a secret, marks what it could not finish. |
 <!-- SKILLS:END -->
 
 ## Installation
@@ -129,6 +130,7 @@ Once installed, ask Claude to help with content tasks and it will pick the right
 "Turn this outlier Reel into a script" → reels-scripting
 "I need a thumbnail for 'How I fired my team'" → youtube-thumbnail
 "Write me a pinned comment" → pinned-comment
+"Am I exposed / did I leak a key" → exposure-audit
 ```
 
 ## Skill Categories
@@ -161,6 +163,9 @@ Once installed, ask Claude to help with content tasks and it will pick the right
 
 ### Analytics
 - `analytics-dashboard` — LinkedIn export to dashboard + 5 recommendations
+
+### Security
+- `exposure-audit` — 20-point sweep of your own setup: synced-folder keys, public repo history, abandoned deployments
 
 ## Prerequisites
 
