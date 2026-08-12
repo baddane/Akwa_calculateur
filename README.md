@@ -4,7 +4,7 @@
 
 # Social Media Skills for AI Agents
 
-The complete set of Claude skills behind Charlie Hills' content system. 350k+ followers across LinkedIn, Instagram, Substack, X and YouTube. 100m+ views per year. All running through one system that starts with the newsletter and flows out to every other channel.
+The complete set of Claude skills behind Charlie Hills' content system. 415k+ followers across LinkedIn, Instagram, Substack, X and YouTube. 100m+ views per year. All running through one system that starts with the newsletter and flows out to every other channel.
 
 Built by [Charlie Hills](https://charliehills.substack.com). Subscribe to the [MarTech AI newsletter](https://charliehills.substack.com) for weekly breakdowns of how this system works in practice.
 
