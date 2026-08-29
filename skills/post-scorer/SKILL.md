@@ -10,6 +10,21 @@ description: >
 
 When this skill triggers, go straight to Step 1. Do not summarise. Do not explain the scoring method. Start immediately.
 
+## Étape 0. Résoudre le client
+
+Ce fork travaille en portefeuille. Avant toute chose, déterminer sur quel
+client on écrit.
+
+- Si le répertoire courant contient `compliance-profile.md`, c'est le client
+  actif. Le lire et continuer sans poser de question.
+- Sinon, si `clients/` existe à la racine, lister les dossiers clients et
+  appeler AskUserQuestion pour demander lequel. Ne jamais deviner.
+- Sinon, continuer en mono-client (comportement d'origine).
+
+Charger `compliance-profile.md` du client retenu et garder la profession et
+les statuts en contexte : ils conditionnent tout ce qui suit.
+Voir `CLIENTS.md` à la racine du dépôt.
+
 ## Step 1. Get the post
 
 If the user already pasted a post in the same message, use it. Otherwise say:
@@ -17,6 +32,32 @@ If the user already pasted a post in the same message, use it. Otherwise say:
 > Paste the LinkedIn post you want scored.
 
 Wait for the post.
+
+## Choix du référentiel
+
+Le référentiel d'origine était calibré sur un compte à plusieurs centaines de
+milliers d'abonnés. Appliqué à un cabinet de cinq personnes ou à un CGP
+indépendant, il écrase tous les scores et rend la notation inutilisable.
+
+Régler le référentiel dans cet ordre de préférence :
+
+1. **Historique du client** dès qu'il existe au moins 20 posts. C'est le seul
+   référentiel qui vaut vraiment : il note la progression du client contre
+   lui-même.
+2. **Palier d'audience** quand l'historique est trop mince. Comparer le taux
+   d'engagement rapporté aux impressions, jamais les valeurs absolues.
+3. **Bonnes pratiques génériques** en dernier recours, en le disant clairement
+   au client pour qu'il sache ce que vaut la note.
+
+Sur ces professions, ajouter deux critères au scoring qui n'existent pas dans
+la version d'origine :
+
+- **Densité d'information utile.** Un post d'avocat ou de CGP se juge d'abord à
+  ce que le lecteur apprend. Un post qui ne transmet rien ne performe pas
+  durablement sur ces niches, même s'il engage une fois.
+- **Passage en conformité.** Un post non conforme reçoit la note zéro, quel que
+  soit son potentiel d'engagement. Le signaler explicitement et renvoyer vers
+  `compliance-check`.
 
 ## Step 2. Load scoring data
 
@@ -40,7 +81,7 @@ If cached data exists, use it. If not, ask the user:
     "multiSelect": false,
     "options": [
       {"label": "Scrape my posts", "description": "Pull my last 100 posts from LinkedIn via Apify. Takes 1 to 2 minutes, costs about $0.50."},
-      {"label": "Use Charlie Hills data", "description": "Score against Charlie Hills benchmarks (1,872 avg engagement, 500 posts analysed). Good fallback."},
+      {"label": "Baseline par palier d'audience", "description": "Noter contre des repères correspondant à la taille d'audience du client, pas contre un compte à 415k followers."},
       {"label": "Skip data scoring", "description": "Score against generic best practices only. Less accurate but instant."}
     ]
   }

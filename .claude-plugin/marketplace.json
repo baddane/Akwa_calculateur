@@ -1,17 +1,20 @@
 {
   "name": "social-media-skills",
   "owner": {
-    "name": "Charlie Hills",
-    "url": "https://charliehills.substack.com"
+    "name": "baddane",
+    "url": "https://github.com/baddane/social-media-skills"
   },
   "plugins": [
     {
       "name": "social-media-skills",
       "source": ".",
-      "description": "The complete set of Claude skills behind Charlie Hills' content system. 415k+ followers across LinkedIn, Instagram, Substack, X and YouTube. 100m+ views per year. 17 skills covering voice, LinkedIn, Instagram Reels, YouTube thumbnails, analytics, and community.",
-      "version": "1.0.0",
+      "description": "Fork spécialisé pour les professions réglementées françaises du conseil : avocats et gestionnaires de patrimoine. 18 skills couvrant voix, LinkedIn, visuels et analytics, avec une couche de conformité déontologique (RIN, secret professionnel, AMF, DDA, ORIAS) câblée en amont de la production.",
+      "version": "1.1.0",
       "metadata": {
         "categories": [
+          "compliance",
+          "legal",
+          "wealth-management",
           "voice",
           "linkedin",
           "reels",
@@ -20,6 +23,10 @@
           "community"
         ],
         "tags": [
+          "conformité",
+          "déontologie avocat",
+          "CGP",
+          "CIF",
           "content creation",
           "linkedin growth",
           "instagram reels",

@@ -10,6 +10,21 @@ description: >
 
 The moment this skill triggers, go straight to Step 1. Do not summarise the skill. Do not explain what it does. Do not list the files it references. Jump to input gathering immediately.
 
+## Étape 0. Résoudre le client
+
+Ce fork travaille en portefeuille. Avant toute chose, déterminer sur quel
+client on écrit.
+
+- Si le répertoire courant contient `compliance-profile.md`, c'est le client
+  actif. Le lire et continuer sans poser de question.
+- Sinon, si `clients/` existe à la racine, lister les dossiers clients et
+  appeler AskUserQuestion pour demander lequel. Ne jamais deviner.
+- Sinon, continuer en mono-client (comportement d'origine).
+
+Charger `compliance-profile.md` du client retenu et garder la profession et
+les statuts en contexte : ils conditionnent tout ce qui suit.
+Voir `CLIENTS.md` à la racine du dépôt.
+
 ## Step 1. Gather inputs
 
 Check the project for about-me.md and voice.md. Read both. If either is missing, tell the user to run the Voice Builder skill first ("say build my voice"), then stop.
@@ -104,6 +119,23 @@ Output the post inside a plain code block:
 
 After the code block, add 2 to 3 sentences on why you chose this hook and structure, referencing specific patterns from voice.md.
 
+## Étape de conformité (obligatoire, non contournable)
+
+Avant de montrer quoi que ce soit à l'utilisateur, faire passer le brouillon
+par le skill `compliance-check` avec le profil réglementaire du client.
+
+- Verdict CONFORME : afficher le contenu, suivi d'une ligne indiquant le
+  profil appliqué et le fait que le contrôle est passé.
+- Verdict A CORRIGER : appliquer les corrections proposées, puis afficher la
+  version corrigée en signalant ce qui a été modifié et pourquoi.
+- Verdict BLOQUANT : ne pas afficher le brouillon d'origine. Expliquer le
+  blocage, proposer un angle de remplacement, et repartir à l'étape de
+  rédaction.
+
+Ne jamais livrer un contenu non contrôlé, même si l'utilisateur presse, même
+pour un simple brouillon de travail. Un brouillon copié-collé devient un post
+publié.
+
 ## Step 4. Iterate
 
 Ask the user:
@@ -128,3 +160,17 @@ Then say:
 - Do not add engagement bait CTAs unless they appear in voice.md.
 - Keep posts between 150 and 300 words unless the user requests otherwise.
 - Plan before writing. Never skip Step 2.
+
+### Règles propres à la verticale
+
+- Français par défaut sur cette verticale, sauf mention contraire dans voice.md.
+- Toute affirmation de droit, de fiscalité ou de chiffre doit être vérifiable.
+  En cas de doute, écrire la version prudente et signaler le point à vérifier
+  au client plutôt que de laisser passer une approximation.
+- Ne jamais transformer un dossier en anecdote, même anonymisée. Si le client
+  fournit un cas réel, le convertir en cas d'école explicitement hypothétique.
+- Ne jamais répondre à une situation individuelle dans un post ou en commentaire.
+  Renvoyer vers un échange privé, ce qui est aussi le bon réflexe commercial.
+- Le CTA se limite à une invitation à échanger. Pas d'appel à l'action pressant,
+  pas d'engagement bait, pas de promesse de résultat.
+- Aucun contenu ne sort sans passer l'étape de conformité.

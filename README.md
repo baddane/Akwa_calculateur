@@ -2,13 +2,36 @@
   <img src="assets/banner.svg" alt="Social Media Skills by Charlie Hills" width="100%"/>
 </p>
 
-# Social Media Skills for AI Agents
+# Skills LinkedIn pour avocats et gestionnaires de patrimoine
 
-The complete set of Claude skills behind Charlie Hills' content system. 415k+ followers across LinkedIn, Instagram, Substack, X and YouTube. 100m+ views per year. All running through one system that starts with the newsletter and flows out to every other channel.
+Fork spécialisé de [social-media-skills](https://github.com/charlie947/social-media-skills)
+de Charlie Hills, retaillé pour les professions réglementées françaises du conseil :
+avocats inscrits à un barreau, et conseillers en gestion de patrimoine (CIF, courtiers,
+IOBSP).
 
-Built by [Charlie Hills](https://charliehills.substack.com). Subscribe to the [MarTech AI newsletter](https://charliehills.substack.com) for weekly breakdowns of how this system works in practice.
+La différence tient en une chose. Sur ces deux métiers, un bon post n'est pas
+seulement un post qui performe : c'est un post publiable. Le secret professionnel,
+l'interdiction de la mention de spécialisation non certifiée, l'obligation de
+présenter le risque au même niveau que le rendement ne sont pas des détails de
+relecture, ce sont des conditions d'existence du contenu.
 
-**Contributions welcome.** Found a way to improve a skill? [Open a PR](https://github.com/charlie947/social-media-skills/pulls). Run into a problem? [Open an issue](https://github.com/charlie947/social-media-skills/issues).
+Ce fork ajoute donc une couche de conformité en amont de la production, et pas
+en aval :
+
+- un skill `compliance-check` qui contrôle tout contenu avant publication et
+  rend un verdict motivé, avec la réécriture conforme ;
+- une base déontologique par profession, dans `skills/compliance-check/references/` ;
+- une porte de conformité obligatoire câblée dans les skills de production ;
+- un `hook-generator` réécrit : le clickbait d'origine est incompatible avec les
+  principes de dignité et de modération d'un avocat comme avec l'exigence de
+  communication non trompeuse d'un CGP ;
+- une structure multi-clients, décrite dans [CLIENTS.md](CLIENTS.md), pour
+  travailler en portefeuille sans mélanger deux dossiers.
+
+**Ce fork est une aide à la rédaction, pas une validation juridique.** Les
+références réglementaires sont un point de départ documenté, à faire valider par
+le bâtonnier ou le responsable conformité du client. La responsabilité de la
+publication reste au professionnel inscrit.
 
 ## What are Skills?
 
@@ -54,6 +77,7 @@ See each skill's `SKILL.md` for trigger phrases, inputs, and dependencies.
 <!-- SKILLS:START -->
 | Skill | Description |
 |---|---|
+| [compliance-check](skills/compliance-check/) | **Nouveau.** Contrôle déontologique avant publication. Verdict CONFORME / A CORRIGER / BLOQUANT, passage fautif cité, réécriture conforme. Grilles avocat (RIN, secret professionnel) et CGP (AMF, DDA, ORIAS). |
 | [voice-builder](skills/voice-builder/) | Build `about-me.md` and `voice.md` from an interview plus 3 to 5 writing samples. The foundation every other skill reads. |
 | [newsletter-voice](skills/newsletter-voice/) | Add newsletter-specific writing instructions on top of voice-builder. Produces `newsletter-voice.md`. |
 | [profile-optimizer](skills/profile-optimizer/) | Rebuild a LinkedIn profile for conversions. Headline, about, experience, featured section, plus 4 image generation prompts. |
@@ -79,7 +103,7 @@ See each skill's `SKILL.md` for trigger phrases, inputs, and dependencies.
 
 ```bash
 # Add the marketplace
-/plugin marketplace add charlie947/social-media-skills
+/plugin marketplace add baddane/social-media-skills
 
 # Install the plugin
 /plugin install social-media-skills
@@ -88,7 +112,7 @@ See each skill's `SKILL.md` for trigger phrases, inputs, and dependencies.
 ### Option 2: Clone and copy
 
 ```bash
-git clone https://github.com/charlie947/social-media-skills.git
+git clone https://github.com/baddane/social-media-skills.git
 cp -r social-media-skills/skills/* ~/.claude/skills/
 ```
 
@@ -105,7 +129,7 @@ zip -r voice-builder.skill voice-builder
 ### Option 4: Git submodule
 
 ```bash
-git submodule add https://github.com/charlie947/social-media-skills.git .agents/social-media-skills
+git submodule add https://github.com/baddane/social-media-skills.git .agents/social-media-skills
 ```
 
 Then reference skills from `.agents/social-media-skills/skills/`.
@@ -116,13 +140,26 @@ Fork the repo, swap the voice rules for your own, and clone your fork into your 
 
 ## Usage
 
-Run `voice-builder` first. Every other skill needs `about-me.md` and `voice.md` to work properly.
+Ordre de démarrage sur un nouveau client :
+
+```bash
+cp -r clients/_template clients/<slug>
+```
+
+1. Remplir `clients/<slug>/compliance-profile.md`. Profession, statuts, mentions
+   obligatoires, sujets interdits. C'est le fichier que lit `compliance-check`,
+   rien ne doit être produit avant lui.
+2. Lancer `voice-builder` pour produire `about-me.md` et `voice.md`.
+3. Produire, avec le contrôle de conformité en sortie systématique.
+
+Voir [CLIENTS.md](CLIENTS.md) pour la convention de portefeuille.
 
 Once installed, ask Claude to help with content tasks and it will pick the right skill:
 
 ```
 "Build my voice" → voice-builder
-"Write me a post about AI agents" → post-writer
+"Écris un post sur la clause de non-concurrence" → post-writer
+"Est-ce que je peux publier ça ?" → compliance-check
 "Score this draft against my history" → post-scorer
 "Make me a carousel from this" → gemini-carousel
 "What should I post this week" → niche-research or content-matrix
@@ -132,6 +169,9 @@ Once installed, ask Claude to help with content tasks and it will pick the right
 ```
 
 ## Skill Categories
+
+### Conformité
+- `compliance-check` — contrôle déontologique avant publication, avocat et CGP
 
 ### Voice foundation
 - `voice-builder` — interview + sample analysis, writes about-me.md and voice.md
@@ -186,8 +226,12 @@ PRs and issues welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on
 
 Run `./validate-skills.sh` before submitting to check your skill against the spec.
 
-## License
+## Crédits et licence
 
-[MIT](LICENSE). Use these however you like. If they help you, a link back to the [newsletter](https://charliehills.substack.com) is appreciated.
+Travail dérivé de [social-media-skills](https://github.com/charlie947/social-media-skills)
+de Charlie Hills, sous licence MIT. La notice de copyright d'origine est conservée
+dans [LICENSE](LICENSE), comme la licence l'exige.
 
-— Charlie
+Ajouts de ce fork : le skill `compliance-check` et ses références réglementaires,
+la réécriture du `hook-generator`, la structure multi-clients, et les adaptations
+verticales des skills de production. Publiés sous la même licence MIT.

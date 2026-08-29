@@ -3,3 +3,7 @@
 node_modules/
 .env
 .env.local
+
+# Données clients : jamais dans le dépôt, sauf le modèle
+clients/*
+!clients/_template/

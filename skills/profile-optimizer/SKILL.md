@@ -10,6 +10,21 @@ description: >
 
 When this skill triggers, go straight to Step 1. Do not summarise. Do not explain what you will produce. Start input gathering immediately.
 
+## Étape 0. Résoudre le client
+
+Ce fork travaille en portefeuille. Avant toute chose, déterminer sur quel
+client on écrit.
+
+- Si le répertoire courant contient `compliance-profile.md`, c'est le client
+  actif. Le lire et continuer sans poser de question.
+- Sinon, si `clients/` existe à la racine, lister les dossiers clients et
+  appeler AskUserQuestion pour demander lequel. Ne jamais deviner.
+- Sinon, continuer en mono-client (comportement d'origine).
+
+Charger `compliance-profile.md` du client retenu et garder la profession et
+les statuts en contexte : ils conditionnent tout ce qui suit.
+Voir `CLIENTS.md` à la racine du dépôt.
+
 ## Step 1. Gather inputs
 
 Check the project for about-me.md. If it exists, pre-fill name, audience, topics, and POV from it. Skip those questions and tell the user what you pulled.
