@@ -3,8 +3,11 @@ import Wizard from "@/components/Wizard";
 import { Credit } from "@/components/Credit";
 import { getPhoto, PHOTOS, type Photo } from "@/lib/unsplash";
 import { OUTILS, FAMILLES } from "@/lib/outils";
+import { SchemaSite } from "@/components/Schema";
 
 export const revalidate = 86400;
+
+export const metadata = { alternates: { canonical: "/" } };
 
 const SUJETS = [
   { cle: "volume" as const, titre: "Le volume net, pas celui de la boîte",
@@ -25,6 +28,7 @@ export default async function Page() {
 
   return (
     <>
+      <SchemaSite />
       <header className="hero">
         {hero && <img className="hero-img" src={hero.src} alt={hero.alt} fetchPriority="high" />}
         <div className="wrap hero-inner">

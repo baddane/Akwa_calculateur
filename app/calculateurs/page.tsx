@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { OUTILS, FAMILLES } from "@/lib/outils";
+import { SchemaListe } from "@/components/Schema";
 
 export const metadata: Metadata = {
   title: "Les 11 calculateurs pour aquarium d'eau douce",
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
+      <SchemaListe outils={OUTILS} />
       <header className="page-head">
         <div className="wrap">
           <nav className="fil"><Link href="/">Akwa</Link> <span>/</span> Calculateurs</nav>

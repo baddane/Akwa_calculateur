@@ -3,6 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { OUTILS, outilParSlug } from "@/lib/outils";
 import Outil from "@/components/outils";
+import { CONTENU } from "@/lib/contenu";
+import { SchemaOutil } from "@/components/Schema";
+import { Methode, Faq } from "@/components/Contenu";
 
 export function generateStaticParams() {
   return OUTILS.map((o) => ({ slug: o.slug }));
@@ -26,9 +29,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!o) notFound();
 
   const voisins = OUTILS.filter((x) => x.famille === o.famille && x.slug !== o.slug);
+  const c = CONTENU[o.slug];
 
   return (
     <>
+      <SchemaOutil outil={o} faq={c.faq} />
       <header className="page-head">
         <div className="wrap">
           <nav className="fil">
@@ -42,6 +47,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
       <main className="wrap">
         <Outil slug={o.slug} />
+
+        <Methode paragraphes={c.methode} titre={`Comment se calcule ${o.nom.toLowerCase()}`} />
+        <Faq questions={c.faq} />
 
         <section className="voisins">
           <h2>Dans la même famille</h2>
