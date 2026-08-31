@@ -1,6 +1,8 @@
-import Home from "@/components/Home";
+import Link from "next/link";
+import Wizard from "@/components/Wizard";
 import { Credit } from "@/components/Credit";
 import { getPhoto, PHOTOS, type Photo } from "@/lib/unsplash";
+import { OUTILS, FAMILLES } from "@/lib/outils";
 
 export const revalidate = 86400;
 
@@ -26,20 +28,15 @@ export default async function Page() {
       <header className="hero">
         {hero && <img className="hero-img" src={hero.src} alt={hero.alt} fetchPriority="high" />}
         <div className="wrap hero-inner">
-          <span className="eyebrow">
-            <svg width="13" height="13" viewBox="0 0 100 60" aria-hidden>
-              <path d="M6,30 C16,15 50,12 68,22 L95,9 L88,30 L95,51 L68,38 C50,48 16,45 6,30 Z" fill="currentColor" />
-            </svg>
-            Aquarium d&apos;eau douce
-          </span>
+          <span className="eyebrow">Aquarium d&apos;eau douce</span>
           <h1>Dimensionnez votre bac avant d&apos;acheter</h1>
           <p>
             La moitié des échecs en aquariophilie se joue avant la mise en eau. Un bac sous-filtré,
             un chauffage trop juste, une population calculée sur le volume affiché plutôt que sur le
-            volume réel. Cinq calculateurs répondent à ces questions en une minute.
+            volume réel. Onze calculateurs, et un assistant qui les enchaîne pour vous.
           </p>
           <div className="hero-stats">
-            <div className="hero-stat"><b>5</b><span>calculateurs</span></div>
+            <div className="hero-stat"><b>11</b><span>calculateurs</span></div>
             <div className="hero-stat"><b>41</b><span>espèces référencées</span></div>
             <div className="hero-stat"><b>0 €</b><span>et sans inscription</span></div>
           </div>
@@ -48,7 +45,26 @@ export default async function Page() {
       </header>
 
       <main className="wrap">
-        <Home />
+        <Wizard />
+
+        <section className="fam" style={{ marginTop: 46 }}>
+          <h2>Ou allez droit au calculateur qu&apos;il vous faut</h2>
+          <p className="fam-sous">
+            Chacun fonctionne seul, et vos dimensions se retiennent d&apos;un outil à l&apos;autre.
+          </p>
+          {FAMILLES.map((f) => (
+            <div key={f} className="fam-bloc">
+              <h3>{f}</h3>
+              <div className="tuiles">
+                {OUTILS.filter((o) => o.famille === f).map((o) => (
+                  <Link key={o.slug} href={`/calculateurs/${o.slug}`} className="tuile">
+                    <b>{o.nom}</b><span>{o.description}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
       </main>
 
       <section className="wrap band">
@@ -70,31 +86,16 @@ export default async function Page() {
             </article>
           ))}
         </div>
+        {credits.length > 0 && (
+          <p className="credit" style={{ marginTop: 20 }}>
+            Photographies : {credits.map((p, i) => (
+              <span key={p.id}>{i > 0 && ", "}
+                <a href={p.authorUrl} target="_blank" rel="noopener nofollow">{p.author}</a>
+              </span>
+            ))} sur <a href="https://unsplash.com/?utm_source=akwa_calculateur&utm_medium=referral" target="_blank" rel="noopener nofollow">Unsplash</a>.
+          </p>
+        )}
       </section>
-
-      <footer>
-        <div className="wrap">
-          <p><strong>En tant que Partenaire Amazon, je réalise un bénéfice sur les achats remplissant les conditions requises.</strong></p>
-          <p>
-            Aucun prix n&apos;est affiché sur ce site. Les liens renvoient vers les résultats de recherche
-            Amazon.fr, où le prix et la disponibilité en vigueur font foi.
-          </p>
-          <p>
-            Les calculs sont des ordres de grandeur destinés à orienter un choix de matériel. Ils ne
-            remplacent ni l&apos;observation du bac ni le suivi régulier des paramètres de l&apos;eau.
-          </p>
-          {credits.length > 0 && (
-            <p className="credit">
-              Photographies : {credits.map((p, i) => (
-                <span key={p.id}>
-                  {i > 0 && ", "}
-                  <a href={p.authorUrl} target="_blank" rel="noopener nofollow">{p.author}</a>
-                </span>
-              ))} sur <a href="https://unsplash.com/?utm_source=akwa_calculateur&utm_medium=referral" target="_blank" rel="noopener nofollow">Unsplash</a>.
-            </p>
-          )}
-        </div>
-      </footer>
     </>
   );
 }

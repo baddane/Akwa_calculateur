@@ -247,3 +247,130 @@ export function calcChangementEau(volumeNet: number, i: EauInput): EauResult {
   return { possible: true, fraction, litres: Math.round(volumeNet * fraction), plancher: robinet,
     message: `Un changement unique de ${Math.round(fraction * 100)} % suffit. Pensez à mettre l'eau neuve à température et à la conditionner avant de la verser.` };
 }
+
+/* ---------- 6. Poids en charge ---------- */
+
+export type PoidsResult = { verre: number; eau: number; sol: number; decor: number; total: number; auSol: number };
+
+/** Le bac vide ne pèse rien, le bac en eau écrase. Un 120 cm dépasse les 300 kg
+ *  sur moins d'un demi-mètre carré, soit davantage qu'un piano droit. */
+export function calcPoids(v: VolumeInput, vol: VolumeResult, epaisseurVerre: number, decorKg: number): PoidsResult {
+  const cm2 = v.longueur * v.largeur + 2 * v.largeur * v.hauteur + 2 * v.longueur * v.hauteur;
+  const verre = (cm2 * (epaisseurVerre / 10) * 2.5) / 1000;      // densité du verre 2,5
+  const litresSol = (v.longueur * v.largeur * v.substrat) / 1000;
+  const sol = litresSol * 1.5;
+  const eau = vol.net;                                            // 1 litre d'eau = 1 kg
+  const total = verre + eau + sol + decorKg;
+  const surfaceM2 = (v.longueur * v.largeur) / 10000;
+  return {
+    verre: Math.round(verre), eau: Math.round(eau), sol: Math.round(sol),
+    decor: Math.round(decorKg), total: Math.round(total),
+    auSol: Math.round(total / Math.max(0.01, surfaceM2)),
+  };
+}
+
+/* ---------- 7. Substrat ---------- */
+
+export type Materiau = { id: string; nom: string; densite: number; note: string };
+export const MATERIAUX: Materiau[] = [
+  { id: "quartz",   nom: "Sable de quartz",  densite: 1.5, note: "Le plus courant, neutre, convient aux corydoras" },
+  { id: "gravier",  nom: "Gravier fin",      densite: 1.6, note: "Éviter les grains coupants avec les poissons de fond" },
+  { id: "nutritif", nom: "Sol nutritif",     densite: 0.8, note: "En sous-couche uniquement, sous 3 cm de sable" },
+  { id: "technique",nom: "Sol technique",    densite: 0.75, note: "Acidifie l'eau, réservé aux bacs à paramètres tenus" },
+];
+
+export type SubstratResult = { litres: number; kg: number; sacs20: number };
+
+export function calcSubstrat(longueur: number, largeur: number, epaisseur: number, densite: number): SubstratResult {
+  const litres = (longueur * largeur * epaisseur) / 1000;
+  const kg = litres * densite;
+  return { litres: Math.round(litres * 10) / 10, kg: Math.ceil(kg), sacs20: Math.ceil(kg / 20) };
+}
+
+/* ---------- 8. Coupe à l'eau osmosée ---------- */
+
+export type OsmoseResult = { possible: boolean; osmosee: number; robinet: number; part: number; message: string };
+
+/** L'eau du robinet française est souvent très dure : 30 °f en Île-de-France,
+ *  quand un bac à crevettes en demande 6 à 8 °dGH. Le degré français vient de
+ *  l'analyse de votre commune, le degré allemand de vos tests d'aquariophilie.
+ *  1 °f = 10 mg/L de CaCO3, 1 °dGH = 17,8 mg/L : le facteur est de 1,78. */
+export const F_VERS_DGH = 1 / 1.78;
+
+export function calcOsmose(volume: number, ghRobinetF: number, ghCibleDGH: number): OsmoseResult {
+  const robinetDGH = ghRobinetF * F_VERS_DGH;
+  if (robinetDGH <= 0) {
+    return { possible: false, osmosee: 0, robinet: 0, part: 0,
+      message: "Renseignez la dureté de votre eau du robinet, en degrés français." };
+  }
+  if (ghCibleDGH >= robinetDGH) {
+    return { possible: false, osmosee: 0, robinet: volume, part: 1,
+      message: `Votre eau titre déjà ${robinetDGH.toFixed(1)} °dGH, soit moins que la cible. Aucune coupe n'est nécessaire : c'est un sel reminéralisant qu'il vous faudrait pour monter.` };
+  }
+  const part = ghCibleDGH / robinetDGH;
+  return {
+    possible: true,
+    robinet: Math.round(volume * part * 10) / 10,
+    osmosee: Math.round(volume * (1 - part) * 10) / 10,
+    part,
+    message: `Soit ${Math.round(part * 100)} % d'eau du robinet. Mélangez avant de verser, jamais dans le bac, et recontrôlez au test avant d'introduire quoi que ce soit.`,
+  };
+}
+
+/* ---------- 9. Sécurité du verre ---------- */
+
+export type VerreResult = { requis: number; verdict: "Correct" | "Juste" | "Insuffisant"; renfort: boolean; message: string };
+
+/** Contrôle indicatif, fondé sur des paliers volontairement prudents plutôt que
+ *  sur une formule de résistance des matériaux. Un bac qui cède ne se rattrape
+ *  pas : au moindre doute, faire valider les cotes par un vitrier. */
+const PALIERS_VERRE: [number, number][] = [[30, 5], [40, 6], [45, 8], [50, 10], [60, 12], [70, 15], [80, 19]];
+
+export function calcVerre(longueur: number, hauteurEau: number, epaisseur: number): VerreResult {
+  let requis = PALIERS_VERRE.find(([h]) => hauteurEau <= h)?.[1] ?? 19;
+  if (longueur > 150) requis += 4;
+  else if (longueur > 100) requis += 2;
+
+  const renfort = longueur > 100 || hauteurEau > 50;
+  const verdict = epaisseur >= requis ? "Correct" : epaisseur >= requis - 1 ? "Juste" : "Insuffisant";
+  const message =
+    verdict === "Insuffisant"
+      ? `Il manque au moins ${(requis - epaisseur).toFixed(0)} mm. Ne remplissez pas ce bac.`
+      : verdict === "Juste"
+      ? "L'épaisseur est à la limite du palier. Acceptable avec des renforts, à faire vérifier."
+      : "L'épaisseur couvre le palier retenu pour cette hauteur d'eau.";
+  return { requis, verdict, renfort, message };
+}
+
+/* ---------- 10. Éclairage ---------- */
+
+export type Exigence = "faible" | "moyenne" | "forte";
+export const EXIGENCES: Record<Exigence, { lmL: number; label: string; exemples: string }> = {
+  faible:  { lmL: 25, label: "Plantes faciles",   exemples: "Anubias, mousse de Java, Cryptocoryne, fougère de Java" },
+  moyenne: { lmL: 40, label: "Plantes moyennes",  exemples: "Vallisnéria, Hygrophila, Ludwigia, Echinodorus" },
+  forte:   { lmL: 65, label: "Plantes exigeantes", exemples: "Gazonnantes, Rotala rouges, plantes à CO2" },
+};
+
+export type LumiereResult = { lumens: number; watts: number; rampe: string; majoration: boolean };
+
+export function calcLumiere(volumeNet: number, hauteurEau: number, longueur: number, ex: Exigence): LumiereResult {
+  const majoration = hauteurEau > 45;                 // la lumière s'atténue avec la profondeur
+  const lumens = volumeNet * EXIGENCES[ex].lmL * (majoration ? 1.3 : 1);
+  return {
+    lumens: Math.round(lumens / 100) * 100,
+    watts: Math.round(lumens / 90),                   // environ 90 lm/W pour une rampe LED
+    rampe: `${Math.max(20, longueur - 10)} à ${longueur} cm`,
+    majoration,
+  };
+}
+
+/* ---------- 11. Chauffage ---------- */
+
+export type ChauffeResult = { theorique: number; palier: number; deux: boolean; delta: number };
+
+export function calcChauffage(volumeNet: number, ambiante: number, cible: number): ChauffeResult {
+  const delta = Math.max(0, cible - ambiante);
+  const theorique = Math.max(volumeNet * 0.4, volumeNet * delta * 0.15);
+  const palier = PALIERS_CHAUFFAGE.find((p) => p >= theorique) ?? 300;
+  return { theorique: Math.round(theorique), palier, deux: volumeNet > 250, delta };
+}

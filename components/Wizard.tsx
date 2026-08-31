@@ -8,6 +8,7 @@ import {
 import { amz } from "@/lib/amazon";
 import TankView from "./TankView";
 import { Fish } from "./Aqua";
+import Link from "next/link";
 
 type Depart = "zero" | "bac";
 const ETAPES = ["Point de départ", "Taille du bac", "Type de bac", "Poissons", "Votre liste"];
@@ -26,7 +27,7 @@ const TYPES: { id: string; label: string; sous: string; profil: Profil; plante: 
   { id: "grands",  label: "Grands poissons",      sous: "Scalaires, cichlidés nains, gros mangeurs.", profil: "forte", plante: false },
 ];
 
-export default function Wizard({ onExpert }: { onExpert: () => void }) {
+export default function Wizard() {
   const [etape, setEtape] = useState(0);
   const [depart, setDepart] = useState<Depart>("zero");
   const [taille, setTaille] = useState("80");
@@ -227,7 +228,8 @@ export default function Wizard({ onExpert }: { onExpert: () => void }) {
       </div>
 
       <p className="wiz-esc">
-        Vous savez déjà ce que vous cherchez ? <button className="lnk lnk-u" onClick={onExpert}>Passer aux calculateurs détaillés</button>
+        Vous savez déjà ce que vous cherchez ?{" "}
+        <Link className="lnk-u" href="/calculateurs">Allez droit au calculateur qu&apos;il vous faut</Link>
       </p>
     </section>
   );
