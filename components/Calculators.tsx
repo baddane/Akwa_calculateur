@@ -6,6 +6,8 @@ import {
   type Profil, type Stock, type VolumeInput, type EauInput,
 } from "@/lib/aqua";
 import { amz } from "@/lib/amazon";
+import TankView from "./TankView";
+import { Fish } from "./Aqua";
 
 const ONGLETS = [
   { id: "volume", label: "Volume réel" },
@@ -130,7 +132,8 @@ export default function Calculators() {
               <h3>Espèces</h3>
               <div className="species">
                 {ESPECES.map((e) => (
-                  <div className="sp" key={e.id}>
+                  <div className={(stock[e.id] ?? 0) > 0 ? "sp on" : "sp"} key={e.id}>
+                    <span className="sp-ico"><Fish shape={e.shape} size={16} /></span>
                     <div>
                       <div className="n">{e.nom}</div>
                       <div className="l">{e.latin}</div>
@@ -148,6 +151,12 @@ export default function Calculators() {
 
         {/* ---- Colonne de résultats ---- */}
         <div className="card">
+          <TankView
+            longueur={bac.longueur} largeur={bac.largeur} hauteur={bac.hauteur}
+            substrat={bac.substrat}
+            stock={onglet === "population" ? stockList : []}
+          />
+
           {onglet === "volume" && (
             <>
               <h2>Volume réel</h2>

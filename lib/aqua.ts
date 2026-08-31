@@ -1,4 +1,5 @@
 export type Zone = "Surface" | "Milieu" | "Fond";
+export type Shape = "tetra" | "guppy" | "cory" | "betta" | "disc" | "eel" | "shrimp" | "snail";
 
 export type Species = {
   id: string;
@@ -9,53 +10,54 @@ export type Species = {
   bancMin: number;     // effectif minimum (1 = solitaire ou couple)
   charge: number;      // facteur de charge biologique
   zone: Zone;
+  shape: Shape;
   tMin: number;       // température basse tolérée, °C
   tMax: number;       // température haute tolérée, °C
   note?: string;
 };
 
 export const ESPECES: Species[] = [
-  { id: "neon",     nom: "Néon bleu",         latin: "Paracheirodon innesi",     taille: 3.5, volumeMin: 80,  bancMin: 10, charge: 1.0, tMin: 21, tMax: 27, zone: "Milieu" },
-  { id: "cardin",   nom: "Cardinalis",        latin: "Paracheirodon axelrodi",   taille: 4,   volumeMin: 100, bancMin: 10, charge: 1.0, tMin: 24, tMax: 29, zone: "Milieu" },
-  { id: "guppy",    nom: "Guppy",             latin: "Poecilia reticulata",      taille: 5,   volumeMin: 60,  bancMin: 3,  charge: 1.0, tMin: 22, tMax: 28, zone: "Surface", note: "1 mâle pour 2 femelles minimum, sinon harcèlement" },
-  { id: "platy",    nom: "Platy",             latin: "Xiphophorus maculatus",    taille: 6,   volumeMin: 80,  bancMin: 3,  charge: 1.1, tMin: 20, tMax: 26, zone: "Milieu" },
-  { id: "xipho",    nom: "Xipho",             latin: "Xiphophorus hellerii",     taille: 10,  volumeMin: 150, bancMin: 3,  charge: 1.3, tMin: 22, tMax: 28, zone: "Milieu" },
-  { id: "molly",    nom: "Molly",             latin: "Poecilia sphenops",        taille: 10,  volumeMin: 150, bancMin: 3,  charge: 1.3, tMin: 24, tMax: 28, zone: "Milieu" },
-  { id: "danio",    nom: "Danio rerio",       latin: "Danio rerio",              taille: 5,   volumeMin: 80,  bancMin: 8,  charge: 1.0, tMin: 18, tMax: 24, zone: "Surface" },
-  { id: "rasbora",  nom: "Rasbora arlequin",  latin: "Trigonostigma heteromorpha", taille: 4.5, volumeMin: 80, bancMin: 8, charge: 1.0, tMin: 23, tMax: 28, zone: "Milieu" },
-  { id: "nezrouge", nom: "Nez rouge",         latin: "Hemigrammus rhodostomus",  taille: 5,   volumeMin: 120, bancMin: 10, charge: 1.0, tMin: 24, tMax: 28, zone: "Milieu", note: "Exige une eau très stable, à réserver aux bacs rodés" },
-  { id: "pristella",nom: "Pristella",         latin: "Pristella maxillaris",     taille: 4.5, volumeMin: 80,  bancMin: 8,  charge: 1.0, tMin: 23, tMax: 28, zone: "Milieu" },
-  { id: "barbus",   nom: "Barbus de Sumatra", latin: "Puntigrus tetrazona",      taille: 7,   volumeMin: 150, bancMin: 10, charge: 1.3, tMin: 21, tMax: 26, zone: "Milieu", note: "Mordeur de nageoires, à éviter avec des poissons voilés" },
-  { id: "corypal",  nom: "Corydoras paleatus",latin: "Corydoras paleatus",       taille: 6,   volumeMin: 100, bancMin: 6,  charge: 1.1, tMin: 18, tMax: 24, zone: "Fond",   note: "Exige un sol fin et non coupant" },
-  { id: "corypanda",nom: "Corydoras panda",   latin: "Corydoras panda",          taille: 5,   volumeMin: 80,  bancMin: 6,  charge: 1.1, tMin: 20, tMax: 25, zone: "Fond" },
-  { id: "ancistrus",nom: "Ancistrus",         latin: "Ancistrus sp.",            taille: 12,  volumeMin: 120, bancMin: 1,  charge: 1.4, tMin: 22, tMax: 27, zone: "Fond",   note: "Gros producteur de déchets, prévoir une racine" },
-  { id: "oto",      nom: "Otocinclus",        latin: "Otocinclus affinis",       taille: 4,   volumeMin: 60,  bancMin: 6,  charge: 0.8, tMin: 21, tMax: 27, zone: "Fond",   note: "À n'introduire que dans un bac mûr, riche en algues" },
-  { id: "kuhli",    nom: "Loche kuhli",       latin: "Pangio kuhlii",            taille: 10,  volumeMin: 100, bancMin: 6,  charge: 1.0, tMin: 24, tMax: 28, zone: "Fond" },
-  { id: "betta",    nom: "Combattant",        latin: "Betta splendens",          taille: 6.5, volumeMin: 30,  bancMin: 1,  charge: 0.9, tMin: 24, tMax: 28, zone: "Surface", note: "Un seul mâle par bac, jamais deux" },
-  { id: "gourami",  nom: "Gourami nain",      latin: "Trichogaster lalius",      taille: 6,   volumeMin: 80,  bancMin: 2,  charge: 1.0, tMin: 23, tMax: 28, zone: "Surface" },
-  { id: "scalaire", nom: "Scalaire",          latin: "Pterophyllum scalare",     taille: 15,  volumeMin: 240, bancMin: 2,  charge: 1.5, tMin: 24, tMax: 29, zone: "Milieu", note: "Hauteur de bac de 50 cm minimum" },
-  { id: "crevette", nom: "Crevette Neocaridina", latin: "Neocaridina davidi",    taille: 3,   volumeMin: 20,  bancMin: 10, charge: 0.3, tMin: 18, tMax: 26, zone: "Fond" },
-  { id: "tetracitron", nom: "Tétra citron",     latin: "Hyphessobrycon pulchripinnis", taille: 4.5, volumeMin: 100, bancMin: 8, charge: 1.0, tMin: 23, tMax: 28, zone: "Milieu" },
-  { id: "tetraemp",  nom: "Tétra empereur",    latin: "Nematobrycon palmeri",     taille: 5,   volumeMin: 100, bancMin: 8,  charge: 1.0, tMin: 23, tMax: 27, zone: "Milieu" },
-  { id: "neonnoir",  nom: "Néon noir",         latin: "Hyphessobrycon herbertaxelrodi", taille: 4, volumeMin: 100, bancMin: 10, charge: 1.0, tMin: 23, tMax: 27, zone: "Milieu" },
-  { id: "fantome",   nom: "Tétra fantôme noir",latin: "Hyphessobrycon megalopterus", taille: 4.5, volumeMin: 100, bancMin: 8, charge: 1.0, tMin: 22, tMax: 28, zone: "Milieu" },
-  { id: "endler",    nom: "Guppy Endler",      latin: "Poecilia wingei",          taille: 3,   volumeMin: 45,  bancMin: 5,  charge: 0.8, tMin: 22, tMax: 28, zone: "Surface", note: "Se croise avec le guppy commun, à ne pas mélanger si vous tenez à la souche" },
-  { id: "nanno",     nom: "Nannostomus",       latin: "Nannostomus beckfordi",    taille: 4,   volumeMin: 80,  bancMin: 8,  charge: 0.8, tMin: 23, tMax: 28, zone: "Milieu" },
-  { id: "caplopez",  nom: "Killi Cap Lopez",   latin: "Aphyosemion australe",     taille: 6,   volumeMin: 60,  bancMin: 2,  charge: 0.9, tMin: 21, tMax: 25, zone: "Milieu", note: "Sauteur, le bac doit être couvert" },
-  { id: "gouramiel", nom: "Gourami miel",      latin: "Trichogaster chuna",       taille: 5,   volumeMin: 60,  bancMin: 2,  charge: 0.9, tMin: 23, tMax: 28, zone: "Surface" },
-  { id: "gouraperle",nom: "Gourami perlé",     latin: "Trichopodus leerii",       taille: 12,  volumeMin: 200, bancMin: 2,  charge: 1.3, tMin: 24, tMax: 28, zone: "Surface" },
-  { id: "cardchine", nom: "Cardinal de Chine", latin: "Tanichthys albonubes",     taille: 4,   volumeMin: 60,  bancMin: 8,  charge: 0.8, tMin: 16, tMax: 22, zone: "Milieu", note: "Espèce d'eau fraîche, incompatible avec un bac tropical chauffé" },
-  { id: "corysterbai",nom: "Corydoras sterbai",latin: "Corydoras sterbai",        taille: 6.5, volumeMin: 120, bancMin: 6,  charge: 1.1, tMin: 24, tMax: 28, zone: "Fond" },
-  { id: "coryhabro", nom: "Corydoras habrosus",latin: "Corydoras habrosus",       taille: 3.5, volumeMin: 60,  bancMin: 8,  charge: 0.9, tMin: 22, tMax: 26, zone: "Fond" },
-  { id: "botia",     nom: "Botia clown",       latin: "Chromobotia macracanthus", taille: 25,  volumeMin: 500, bancMin: 5,  charge: 1.8, tMin: 25, tMax: 29, zone: "Fond",   note: "Atteint 25 cm et vit en groupe, réservé aux très grands volumes" },
-  { id: "amano",     nom: "Crevette Amano",    latin: "Caridina multidentata",    taille: 5,   volumeMin: 40,  bancMin: 5,  charge: 0.4, tMin: 20, tMax: 27, zone: "Fond",   note: "Ne se reproduit pas en eau douce, la population ne se renouvelle pas" },
-  { id: "neritina",  nom: "Escargot Neritina", latin: "Neritina natalensis",      taille: 3,   volumeMin: 20,  bancMin: 1,  charge: 0.3, tMin: 22, tMax: 28, zone: "Fond",   note: "Pond des œufs blancs qui n'éclosent jamais en eau douce" },
-  { id: "ramirezi",  nom: "Ramirezi",          latin: "Mikrogeophagus ramirezi",  taille: 5,   volumeMin: 100, bancMin: 2,  charge: 1.1, tMin: 26, tMax: 29, zone: "Fond",   note: "Exige une eau chaude et très propre, fragile en bac neuf" },
-  { id: "apisto",    nom: "Apistogramma",      latin: "Apistogramma cacatuoides", taille: 8,   volumeMin: 120, bancMin: 2,  charge: 1.1, tMin: 24, tMax: 28, zone: "Fond",   note: "Territorial pendant la reproduction, prévoir des caches" },
-  { id: "discus",    nom: "Discus",            latin: "Symphysodon sp.",          taille: 20,  volumeMin: 400, bancMin: 5,  charge: 1.8, tMin: 28, tMax: 31, zone: "Milieu", note: "Réservé aux aquariophiles confirmés, eau très chaude et changements fréquents" },
-  { id: "labeo",     nom: "Labeo bicolor",     latin: "Epalzeorhynchos bicolor",  taille: 12,  volumeMin: 200, bancMin: 1,  charge: 1.3, tMin: 23, tMax: 27, zone: "Fond",   note: "Territorial, un seul individu par bac" },
-  { id: "barbcerise",nom: "Barbus cerise",     latin: "Puntius titteya",          taille: 5,   volumeMin: 80,  bancMin: 8,  charge: 1.0, tMin: 22, tMax: 27, zone: "Milieu" },
-  { id: "galaxy",    nom: "Rasbora galaxy",    latin: "Danio margaritatus",       taille: 2.5, volumeMin: 40,  bancMin: 8,  charge: 0.6, tMin: 21, tMax: 26, zone: "Milieu" },
+  { id: "neon",     nom: "Néon bleu",         latin: "Paracheirodon innesi",     taille: 3.5, volumeMin: 80,  bancMin: 10, charge: 1.0, shape: "tetra", tMin: 21, tMax: 27, zone: "Milieu" },
+  { id: "cardin",   nom: "Cardinalis",        latin: "Paracheirodon axelrodi",   taille: 4,   volumeMin: 100, bancMin: 10, charge: 1.0, shape: "tetra", tMin: 24, tMax: 29, zone: "Milieu" },
+  { id: "guppy",    nom: "Guppy",             latin: "Poecilia reticulata",      taille: 5,   volumeMin: 60,  bancMin: 3,  charge: 1.0, shape: "guppy", tMin: 22, tMax: 28, zone: "Surface", note: "1 mâle pour 2 femelles minimum, sinon harcèlement" },
+  { id: "platy",    nom: "Platy",             latin: "Xiphophorus maculatus",    taille: 6,   volumeMin: 80,  bancMin: 3,  charge: 1.1, shape: "guppy", tMin: 20, tMax: 26, zone: "Milieu" },
+  { id: "xipho",    nom: "Xipho",             latin: "Xiphophorus hellerii",     taille: 10,  volumeMin: 150, bancMin: 3,  charge: 1.3, shape: "guppy", tMin: 22, tMax: 28, zone: "Milieu" },
+  { id: "molly",    nom: "Molly",             latin: "Poecilia sphenops",        taille: 10,  volumeMin: 150, bancMin: 3,  charge: 1.3, shape: "guppy", tMin: 24, tMax: 28, zone: "Milieu" },
+  { id: "danio",    nom: "Danio rerio",       latin: "Danio rerio",              taille: 5,   volumeMin: 80,  bancMin: 8,  charge: 1.0, shape: "tetra", tMin: 18, tMax: 24, zone: "Surface" },
+  { id: "rasbora",  nom: "Rasbora arlequin",  latin: "Trigonostigma heteromorpha", taille: 4.5, volumeMin: 80, bancMin: 8, charge: 1.0, shape: "tetra", tMin: 23, tMax: 28, zone: "Milieu" },
+  { id: "nezrouge", nom: "Nez rouge",         latin: "Hemigrammus rhodostomus",  taille: 5,   volumeMin: 120, bancMin: 10, charge: 1.0, shape: "tetra", tMin: 24, tMax: 28, zone: "Milieu", note: "Exige une eau très stable, à réserver aux bacs rodés" },
+  { id: "pristella",nom: "Pristella",         latin: "Pristella maxillaris",     taille: 4.5, volumeMin: 80,  bancMin: 8,  charge: 1.0, shape: "tetra", tMin: 23, tMax: 28, zone: "Milieu" },
+  { id: "barbus",   nom: "Barbus de Sumatra", latin: "Puntigrus tetrazona",      taille: 7,   volumeMin: 150, bancMin: 10, charge: 1.3, shape: "tetra", tMin: 21, tMax: 26, zone: "Milieu", note: "Mordeur de nageoires, à éviter avec des poissons voilés" },
+  { id: "corypal",  nom: "Corydoras paleatus",latin: "Corydoras paleatus",       taille: 6,   volumeMin: 100, bancMin: 6,  charge: 1.1, shape: "cory", tMin: 18, tMax: 24, zone: "Fond",   note: "Exige un sol fin et non coupant" },
+  { id: "corypanda",nom: "Corydoras panda",   latin: "Corydoras panda",          taille: 5,   volumeMin: 80,  bancMin: 6,  charge: 1.1, shape: "cory", tMin: 20, tMax: 25, zone: "Fond" },
+  { id: "ancistrus",nom: "Ancistrus",         latin: "Ancistrus sp.",            taille: 12,  volumeMin: 120, bancMin: 1,  charge: 1.4, shape: "cory", tMin: 22, tMax: 27, zone: "Fond",   note: "Gros producteur de déchets, prévoir une racine" },
+  { id: "oto",      nom: "Otocinclus",        latin: "Otocinclus affinis",       taille: 4,   volumeMin: 60,  bancMin: 6,  charge: 0.8, shape: "cory", tMin: 21, tMax: 27, zone: "Fond",   note: "À n'introduire que dans un bac mûr, riche en algues" },
+  { id: "kuhli",    nom: "Loche kuhli",       latin: "Pangio kuhlii",            taille: 10,  volumeMin: 100, bancMin: 6,  charge: 1.0, shape: "eel", tMin: 24, tMax: 28, zone: "Fond" },
+  { id: "betta",    nom: "Combattant",        latin: "Betta splendens",          taille: 6.5, volumeMin: 30,  bancMin: 1,  charge: 0.9, shape: "betta", tMin: 24, tMax: 28, zone: "Surface", note: "Un seul mâle par bac, jamais deux" },
+  { id: "gourami",  nom: "Gourami nain",      latin: "Trichogaster lalius",      taille: 6,   volumeMin: 80,  bancMin: 2,  charge: 1.0, shape: "betta", tMin: 23, tMax: 28, zone: "Surface" },
+  { id: "scalaire", nom: "Scalaire",          latin: "Pterophyllum scalare",     taille: 15,  volumeMin: 240, bancMin: 2,  charge: 1.5, shape: "disc", tMin: 24, tMax: 29, zone: "Milieu", note: "Hauteur de bac de 50 cm minimum" },
+  { id: "crevette", nom: "Crevette Neocaridina", latin: "Neocaridina davidi",    taille: 3,   volumeMin: 20,  bancMin: 10, charge: 0.3, shape: "shrimp", tMin: 18, tMax: 26, zone: "Fond" },
+  { id: "tetracitron", nom: "Tétra citron",     latin: "Hyphessobrycon pulchripinnis", taille: 4.5, volumeMin: 100, bancMin: 8, charge: 1.0, shape: "tetra", tMin: 23, tMax: 28, zone: "Milieu" },
+  { id: "tetraemp",  nom: "Tétra empereur",    latin: "Nematobrycon palmeri",     taille: 5,   volumeMin: 100, bancMin: 8,  charge: 1.0, shape: "tetra", tMin: 23, tMax: 27, zone: "Milieu" },
+  { id: "neonnoir",  nom: "Néon noir",         latin: "Hyphessobrycon herbertaxelrodi", taille: 4, volumeMin: 100, bancMin: 10, charge: 1.0, shape: "tetra", tMin: 23, tMax: 27, zone: "Milieu" },
+  { id: "fantome",   nom: "Tétra fantôme noir",latin: "Hyphessobrycon megalopterus", taille: 4.5, volumeMin: 100, bancMin: 8, charge: 1.0, shape: "tetra", tMin: 22, tMax: 28, zone: "Milieu" },
+  { id: "endler",    nom: "Guppy Endler",      latin: "Poecilia wingei",          taille: 3,   volumeMin: 45,  bancMin: 5,  charge: 0.8, shape: "guppy", tMin: 22, tMax: 28, zone: "Surface", note: "Se croise avec le guppy commun, à ne pas mélanger si vous tenez à la souche" },
+  { id: "nanno",     nom: "Nannostomus",       latin: "Nannostomus beckfordi",    taille: 4,   volumeMin: 80,  bancMin: 8,  charge: 0.8, shape: "tetra", tMin: 23, tMax: 28, zone: "Milieu" },
+  { id: "caplopez",  nom: "Killi Cap Lopez",   latin: "Aphyosemion australe",     taille: 6,   volumeMin: 60,  bancMin: 2,  charge: 0.9, shape: "betta", tMin: 21, tMax: 25, zone: "Milieu", note: "Sauteur, le bac doit être couvert" },
+  { id: "gouramiel", nom: "Gourami miel",      latin: "Trichogaster chuna",       taille: 5,   volumeMin: 60,  bancMin: 2,  charge: 0.9, shape: "betta", tMin: 23, tMax: 28, zone: "Surface" },
+  { id: "gouraperle",nom: "Gourami perlé",     latin: "Trichopodus leerii",       taille: 12,  volumeMin: 200, bancMin: 2,  charge: 1.3, shape: "betta", tMin: 24, tMax: 28, zone: "Surface" },
+  { id: "cardchine", nom: "Cardinal de Chine", latin: "Tanichthys albonubes",     taille: 4,   volumeMin: 60,  bancMin: 8,  charge: 0.8, shape: "tetra", tMin: 16, tMax: 22, zone: "Milieu", note: "Espèce d'eau fraîche, incompatible avec un bac tropical chauffé" },
+  { id: "corysterbai",nom: "Corydoras sterbai",latin: "Corydoras sterbai",        taille: 6.5, volumeMin: 120, bancMin: 6,  charge: 1.1, shape: "cory", tMin: 24, tMax: 28, zone: "Fond" },
+  { id: "coryhabro", nom: "Corydoras habrosus",latin: "Corydoras habrosus",       taille: 3.5, volumeMin: 60,  bancMin: 8,  charge: 0.9, shape: "cory", tMin: 22, tMax: 26, zone: "Fond" },
+  { id: "botia",     nom: "Botia clown",       latin: "Chromobotia macracanthus", taille: 25,  volumeMin: 500, bancMin: 5,  charge: 1.8, shape: "eel", tMin: 25, tMax: 29, zone: "Fond",   note: "Atteint 25 cm et vit en groupe, réservé aux très grands volumes" },
+  { id: "amano",     nom: "Crevette Amano",    latin: "Caridina multidentata",    taille: 5,   volumeMin: 40,  bancMin: 5,  charge: 0.4, shape: "shrimp", tMin: 20, tMax: 27, zone: "Fond",   note: "Ne se reproduit pas en eau douce, la population ne se renouvelle pas" },
+  { id: "neritina",  nom: "Escargot Neritina", latin: "Neritina natalensis",      taille: 3,   volumeMin: 20,  bancMin: 1,  charge: 0.3, shape: "snail", tMin: 22, tMax: 28, zone: "Fond",   note: "Pond des œufs blancs qui n'éclosent jamais en eau douce" },
+  { id: "ramirezi",  nom: "Ramirezi",          latin: "Mikrogeophagus ramirezi",  taille: 5,   volumeMin: 100, bancMin: 2,  charge: 1.1, shape: "disc", tMin: 26, tMax: 29, zone: "Fond",   note: "Exige une eau chaude et très propre, fragile en bac neuf" },
+  { id: "apisto",    nom: "Apistogramma",      latin: "Apistogramma cacatuoides", taille: 8,   volumeMin: 120, bancMin: 2,  charge: 1.1, shape: "disc", tMin: 24, tMax: 28, zone: "Fond",   note: "Territorial pendant la reproduction, prévoir des caches" },
+  { id: "discus",    nom: "Discus",            latin: "Symphysodon sp.",          taille: 20,  volumeMin: 400, bancMin: 5,  charge: 1.8, shape: "disc", tMin: 28, tMax: 31, zone: "Milieu", note: "Réservé aux aquariophiles confirmés, eau très chaude et changements fréquents" },
+  { id: "labeo",     nom: "Labeo bicolor",     latin: "Epalzeorhynchos bicolor",  taille: 12,  volumeMin: 200, bancMin: 1,  charge: 1.3, shape: "cory", tMin: 23, tMax: 27, zone: "Fond",   note: "Territorial, un seul individu par bac" },
+  { id: "barbcerise",nom: "Barbus cerise",     latin: "Puntius titteya",          taille: 5,   volumeMin: 80,  bancMin: 8,  charge: 1.0, shape: "tetra", tMin: 22, tMax: 27, zone: "Milieu" },
+  { id: "galaxy",    nom: "Rasbora galaxy",    latin: "Danio margaritatus",       taille: 2.5, volumeMin: 40,  bancMin: 8,  charge: 0.6, shape: "tetra", tMin: 21, tMax: 26, zone: "Milieu" },
 ];
 
 /* ---------- 1. Volume réel ---------- */
