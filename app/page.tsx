@@ -1,4 +1,4 @@
-import Calculators from "@/components/Calculators";
+import Home from "@/components/Home";
 import { Credit } from "@/components/Credit";
 import { getPhoto, PHOTOS, type Photo } from "@/lib/unsplash";
 
@@ -48,7 +48,7 @@ export default async function Page() {
       </header>
 
       <main className="wrap">
-        <Calculators />
+        <Home />
       </main>
 
       <section className="wrap band">

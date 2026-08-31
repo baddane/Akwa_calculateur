@@ -96,10 +96,12 @@ export type PopResult = {
 };
 
 /** Modèle de charge : centimètres de poisson adulte pondérés, rapportés au volume
- *  net. Volontairement conservateur (1 cm pour 1,6 L), la règle du 1 cm par litre
- *  aboutit systématiquement à des bacs surpeuplés. */
+ *  net, à raison de 1 cm pour 1,1 L. Le facteur de charge propre à chaque espèce
+ *  fait déjà le travail que la règle du pouce par gallon ignore : un ancistrus et
+ *  un néon de même longueur ne salissent pas pareil. Calibré pour qu'un
+ *  communautaire planté correctement filtré tombe autour de 90 %. */
 export function calcPopulation(volumeNet: number, stock: Stock[]): PopResult {
-  const capaciteCm = volumeNet / 1.6;
+  const capaciteCm = volumeNet / 1.1;
   let chargeCm = 0;
   const alertes: string[] = [];
   const parZone: Record<Zone, number> = { Surface: 0, Milieu: 0, Fond: 0 };
@@ -134,7 +136,7 @@ export function calcPopulation(volumeNet: number, stock: Stock[]): PopResult {
   }
 
   const taux = capaciteCm > 0 ? chargeCm / capaciteCm : 0;
-  const verdict = taux <= 0.7 ? "Confortable" : taux <= 1 ? "Correct" : "Surpeuplé";
+  const verdict = taux <= 0.75 ? "Confortable" : taux <= 1 ? "Correct" : "Surpeuplé";
   return { capaciteCm: round(capaciteCm), chargeCm: round(chargeCm), taux, verdict, alertes, parZone, tempMin, tempMax };
 }
 

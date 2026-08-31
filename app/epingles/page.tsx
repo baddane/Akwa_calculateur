@@ -13,7 +13,7 @@ const PINS: Pin[] = [
     big: "−35 %", sub: "Une fois les masses filtrantes en place, le débit réel s'effondre. Achetez toujours sur le chiffre corrigé." },
   { id: "population", tone: "c", kicker: "La règle qu'il faut oublier",
     punch: "1 cm de poisson par litre surpeuple presque tous les bacs",
-    sub: "Elle ignore la taille adulte, la charge biologique et les effectifs de banc. Comptez plutôt 1 cm pour 1,6 litre net." },
+    sub: "Elle ignore la charge réelle de chaque espèce et les effectifs de banc. Un ancistrus et un néon de même longueur ne salissent pas pareil." },
   { id: "nitrates", tone: "a", kicker: "Ce que personne ne vérifie",
     punch: "Votre eau du robinet fixe un plancher de nitrates que rien ne fait descendre",
     sub: "Si elle titre 25 mg/L, aucun changement d'eau ne descendra le bac sous 25. Il faut couper à l'osmosée." },
