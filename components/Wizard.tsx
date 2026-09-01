@@ -8,6 +8,7 @@ import {
 import { amz } from "@/lib/amazon";
 import TankView from "./TankView";
 import { Fish } from "./Aqua";
+import { IconeMateriel, type Icone } from "./Icones";
 import Link from "next/link";
 
 type Depart = "zero" | "bac";
@@ -193,7 +194,8 @@ export default function Wizard() {
               </div>
               {lignes.map((l, i) => (
                 <div className="buyrow" key={i}>
-                  <div>
+                  <span className="buyico"><IconeMateriel nom={l.icone as Icone} /></span>
+                  <div className="buytxt">
                     <b>{l.poste}{!l.essentiel && <em> · confort</em>}</b>
                     <span>{l.specif}</span>
                   </div>

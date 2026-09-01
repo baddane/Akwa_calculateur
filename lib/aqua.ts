@@ -161,7 +161,7 @@ export function calcFiltration(volumeNet: number, profil: Profil): FiltreResult 
 
 /* ---------- 4. Kit de démarrage ---------- */
 
-export type KitLigne = { poste: string; specif: string; recherche: string; essentiel: boolean };
+export type KitLigne = { poste: string; specif: string; recherche: string; essentiel: boolean; icone: string };
 
 const PALIERS_CHAUFFAGE = [25, 50, 75, 100, 150, 200, 300];
 
@@ -174,34 +174,34 @@ export function calcKit(v: VolumeInput, vol: VolumeResult, profil: Profil, plant
   const rampe = `${Math.max(20, v.longueur - 10)} à ${v.longueur} cm`;
 
   const lignes: KitLigne[] = [
-    { poste: "Aquarium",        specif: `${v.longueur} × ${v.largeur} × ${v.hauteur} cm, soit ${vol.brut} L bruts`, recherche: `aquarium ${Math.round(vol.brut)} litres équipé`, essentiel: true },
-    { poste: "Filtre",          specif: `Débit constructeur ${filtre.constructeur} L/h (${filtre.rotation} rotations/h une fois chargé)`, recherche: `filtre aquarium ${filtre.constructeur} l/h`, essentiel: true },
-    { poste: "Chauffage",       specif: `${watts} W, environ 1 W par litre net`, recherche: `chauffage aquarium ${watts}w thermostat`, essentiel: true },
-    { poste: "Éclairage",       specif: plante ? `Rampe LED ${rampe}, spectre plantes` : `Rampe LED ${rampe}`, recherche: plante ? `rampe led aquarium plantes ${v.longueur} cm` : `rampe led aquarium ${v.longueur} cm`, essentiel: true },
+    { icone: "bac", poste: "Aquarium",        specif: `${v.longueur} × ${v.largeur} × ${v.hauteur} cm, soit ${vol.brut} L bruts`, recherche: `aquarium ${Math.round(vol.brut)} litres équipé`, essentiel: true },
+    { icone: "filtre", poste: "Filtre",          specif: `Débit constructeur ${filtre.constructeur} L/h (${filtre.rotation} rotations/h une fois chargé)`, recherche: `filtre aquarium ${filtre.constructeur} l/h`, essentiel: true },
+    { icone: "chauffage", poste: "Chauffage",       specif: `${watts} W, environ 1 W par litre net`, recherche: `chauffage aquarium ${watts}w thermostat`, essentiel: true },
+    { icone: "lampe", poste: "Éclairage",       specif: plante ? `Rampe LED ${rampe}, spectre plantes` : `Rampe LED ${rampe}`, recherche: plante ? `rampe led aquarium plantes ${v.longueur} cm` : `rampe led aquarium ${v.longueur} cm`, essentiel: true },
   ];
 
   if (plante) {
-    lignes.push({ poste: "Sol nutritif", specif: `Environ ${Math.ceil(kgSol * 0.45)} kg, en sous-couche de 3 cm`, recherche: "sol nutritif aquarium plante", essentiel: true });
-    lignes.push({ poste: "Sable de recouvrement", specif: `Environ ${Math.ceil(kgSol * 0.55)} kg, 3 cm par-dessus`, recherche: "sable de quartz aquarium 3 kg", essentiel: true });
+    lignes.push({ icone: "substrat", poste: "Sol nutritif", specif: `Environ ${Math.ceil(kgSol * 0.45)} kg, en sous-couche de 3 cm`, recherche: "sol nutritif aquarium plante", essentiel: true });
+    lignes.push({ icone: "substrat", poste: "Sable de recouvrement", specif: `Environ ${Math.ceil(kgSol * 0.55)} kg, 3 cm par-dessus`, recherche: "sable de quartz aquarium 3 kg", essentiel: true });
   } else {
-    lignes.push({ poste: "Substrat", specif: `Environ ${kgSol} kg pour ${epaisseur} cm d'épaisseur`, recherche: "sable de quartz aquarium", essentiel: true });
+    lignes.push({ icone: "substrat", poste: "Substrat", specif: `Environ ${kgSol} kg pour ${epaisseur} cm d'épaisseur`, recherche: "sable de quartz aquarium", essentiel: true });
   }
 
   lignes.push(
-    { poste: "Conditionneur d'eau", specif: "Neutralise le chlore à chaque changement d'eau", recherche: "conditionneur eau aquarium anti chlore", essentiel: true },
-    { poste: "Bactéries de démarrage", specif: "Amorce le cycle de l'azote", recherche: "bacteries demarrage aquarium", essentiel: true },
-    { poste: "Tests en gouttes", specif: "pH, NO2, NO3, GH et KH. Les bandelettes sont trop imprécises pour un démarrage", recherche: "test aquarium gouttes ph no2 no3", essentiel: true },
-    { poste: "Thermomètre", specif: "Contrôle indépendant du chauffage", recherche: "thermometre aquarium", essentiel: true },
-    { poste: "Aspirateur à vase", specif: `Cloche adaptée à ${v.hauteur} cm de hauteur`, recherche: "aspirateur a vase aquarium siphon", essentiel: true },
-    { poste: "Épuisette", specif: "Deux tailles, une fine pour les alevins", recherche: "epuisette aquarium lot", essentiel: false },
-    { poste: "Nourriture", specif: profil === "crevettes" ? "Bâtonnets pour crevettes" : "Flocons ou granulés selon les zones occupées", recherche: profil === "crevettes" ? "nourriture crevettes aquarium" : "nourriture poisson aquarium granules", essentiel: true },
-    { poste: "Seau dédié", specif: "Jamais un seau ayant vu du détergent", recherche: "seau gradue 10 litres", essentiel: false },
+    { icone: "flacon", poste: "Conditionneur d'eau", specif: "Neutralise le chlore à chaque changement d'eau", recherche: "conditionneur eau aquarium anti chlore", essentiel: true },
+    { icone: "bacteries", poste: "Bactéries de démarrage", specif: "Amorce le cycle de l'azote", recherche: "bacteries demarrage aquarium", essentiel: true },
+    { icone: "tests", poste: "Tests en gouttes", specif: "pH, NO2, NO3, GH et KH. Les bandelettes sont trop imprécises pour un démarrage", recherche: "test aquarium gouttes ph no2 no3", essentiel: true },
+    { icone: "thermometre", poste: "Thermomètre", specif: "Contrôle indépendant du chauffage", recherche: "thermometre aquarium", essentiel: true },
+    { icone: "siphon", poste: "Aspirateur à vase", specif: `Cloche adaptée à ${v.hauteur} cm de hauteur`, recherche: "aspirateur a vase aquarium siphon", essentiel: true },
+    { icone: "epuisette", poste: "Épuisette", specif: "Deux tailles, une fine pour les alevins", recherche: "epuisette aquarium lot", essentiel: false },
+    { icone: "nourriture", poste: "Nourriture", specif: profil === "crevettes" ? "Bâtonnets pour crevettes" : "Flocons ou granulés selon les zones occupées", recherche: profil === "crevettes" ? "nourriture crevettes aquarium" : "nourriture poisson aquarium granules", essentiel: true },
+    { icone: "seau", poste: "Seau dédié", specif: "Jamais un seau ayant vu du détergent", recherche: "seau gradue 10 litres", essentiel: false },
   );
 
   if (plante) {
     lignes.push(
-      { poste: "Engrais liquide", specif: "À partir de la 4e semaine", recherche: "engrais plantes aquarium liquide", essentiel: false },
-      { poste: "Pince et ciseaux", specif: "Plantation et taille", recherche: "pince ciseaux aquascaping", essentiel: false },
+      { icone: "flacon", poste: "Engrais liquide", specif: "À partir de la 4e semaine", recherche: "engrais plantes aquarium liquide", essentiel: false },
+      { icone: "outils", poste: "Pince et ciseaux", specif: "Plantation et taille", recherche: "pince ciseaux aquascaping", essentiel: false },
     );
   }
 

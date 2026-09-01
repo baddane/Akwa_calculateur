@@ -8,6 +8,7 @@ import {
 import { useTank } from "../useTank";
 import { Champ, Stat, Achat } from "../ui";
 import { amz } from "@/lib/amazon";
+import { IconeMateriel, type Icone } from "../Icones";
 
 function Cotes({ bac, set }: { bac: ReturnType<typeof useTank>["bac"]; set: ReturnType<typeof useTank>["set"] }) {
   return (
@@ -170,7 +171,8 @@ export function Kit() {
         </div>
         {kit.map((l, i) => (
           <div className="buyrow" key={i}>
-            <div>
+            <span className="buyico"><IconeMateriel nom={l.icone as Icone} /></span>
+            <div className="buytxt">
               <b>{l.poste}{!l.essentiel && <em> · confort</em>}</b>
               <span>{l.specif}</span>
             </div>

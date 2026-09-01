@@ -313,7 +313,13 @@ footer p { margin: 0 0 10px; max-width: 78ch; }
 .buylist-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
 .buylist-head h3 { font-size: 17px; margin: 0; letter-spacing: -.015em; }
 .buylist-head span { font-size: 12.5px; color: var(--muted); }
-.buyrow { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.buyrow { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.buytxt { flex: 1 1 auto; min-width: 0; }
+.buyico {
+  flex: 0 0 auto; width: 48px; height: 48px; border-radius: 10px;
+  display: grid; place-items: center; color: var(--accent);
+  background: var(--accent-soft); border: 1px solid var(--border);
+}
 .buyrow b { display: block; font-size: 14.5px; font-weight: 600; }
 .buyrow b em { font-style: normal; font-weight: 400; color: var(--muted); font-size: 12px; }
 .buyrow span { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; line-height: 1.45; }
@@ -400,7 +406,10 @@ footer p { margin: 0 0 10px; max-width: 78ch; }
   .wiz-body { padding: 20px 18px; }
   .prose { margin: 32px 0; }
   .stats { grid-template-columns: 1fr 1fr; }
-  .buyrow { flex-direction: column; align-items: flex-start; gap: 9px; }
+  .buyrow { flex-wrap: wrap; gap: 11px; }
+  .buyico { width: 42px; height: 42px; }
+  .buytxt { flex: 1 1 60%; }
+  .buyrow .btn { margin-left: auto; }
   .topnav { gap: 14px; font-size: 13.5px; }
 }
 /* Sur iOS, une police d'entrée sous 16 px déclenche un zoom automatique au focus. */
