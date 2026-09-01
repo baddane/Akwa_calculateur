@@ -1,7 +1,8 @@
 import type { Outil } from "@/lib/outils";
 import type { Question } from "@/lib/contenu";
+import { SITE } from "@/lib/site";
 
-const BASE = "https://akwa-calculateur.vercel.app";
+const BASE = SITE.url;
 
 function Ld({ data }: { data: object }) {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
@@ -12,8 +13,8 @@ export function SchemaSite() {
     <Ld data={{
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "Akwa",
-      alternateName: "Akwa, calculateurs pour aquarium d'eau douce",
+      name: SITE.nom,
+      alternateName: `${SITE.nom}, ${SITE.accroche}`,
       url: BASE,
       inLanguage: "fr-FR",
       description:
@@ -30,7 +31,7 @@ export function SchemaOutil({ outil, faq }: { outil: Outil; faq: Question[] }) {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Akwa", item: BASE },
+          { "@type": "ListItem", position: 1, name: SITE.nom, item: BASE },
           { "@type": "ListItem", position: 2, name: "Calculateurs", item: `${BASE}/calculateurs` },
           { "@type": "ListItem", position: 3, name: outil.nom, item: url },
         ],
@@ -68,7 +69,7 @@ export function SchemaListe({ outils }: { outils: Outil[] }) {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Akwa", item: BASE },
+          { "@type": "ListItem", position: 1, name: SITE.nom, item: BASE },
           { "@type": "ListItem", position: 2, name: "Calculateurs", item: `${BASE}/calculateurs` },
         ],
       }} />

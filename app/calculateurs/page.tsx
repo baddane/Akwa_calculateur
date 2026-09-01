@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { OUTILS, FAMILLES } from "@/lib/outils";
+import { SITE } from "@/lib/site";
 import { SchemaListe } from "@/components/Schema";
 
 export const metadata: Metadata = {
@@ -16,7 +17,7 @@ export default function Page() {
       <SchemaListe outils={OUTILS} />
       <header className="page-head">
         <div className="wrap">
-          <nav className="fil"><Link href="/">Akwa</Link> <span>/</span> Calculateurs</nav>
+          <nav className="fil"><Link href="/">{SITE.nom}</Link> <span>/</span> Calculateurs</nav>
           <h1>Les onze calculateurs</h1>
           <p>
             Chacun répond à une question précise et fonctionne seul. Vos dimensions se retiennent

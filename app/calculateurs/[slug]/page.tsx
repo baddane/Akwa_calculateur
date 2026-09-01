@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { OUTILS, outilParSlug } from "@/lib/outils";
+import { SITE } from "@/lib/site";
 import Outil from "@/components/outils";
 import { CONTENU } from "@/lib/contenu";
 import { SchemaOutil } from "@/components/Schema";
@@ -39,7 +40,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <header className="page-head">
         <div className="wrap">
           <nav className="fil">
-            <Link href="/">Akwa</Link> <span>/</span>{" "}
+            <Link href="/">{SITE.nom}</Link> <span>/</span>{" "}
             <Link href="/calculateurs">Calculateurs</Link> <span>/</span> {o.nom}
           </nav>
           <h1>{o.h1}</h1>

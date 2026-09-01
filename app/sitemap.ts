@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { OUTILS } from "@/lib/outils";
+import { SITE } from "@/lib/site";
 
-const BASE = "https://akwa-calculateur.vercel.app";
+const BASE = SITE.url;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

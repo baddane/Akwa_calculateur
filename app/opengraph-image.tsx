@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
+import { SITE } from "@/lib/site";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Akwa, calculateurs pour aquarium d'eau douce";
+export const alt = `${SITE.nom}, ${SITE.accroche}`;
 
 export default async function Image() {
   return new ImageResponse(
@@ -16,7 +17,7 @@ export default async function Image() {
           <svg width="34" height="21" viewBox="0 0 100 60">
             <path d="M6,30 C16,15 50,12 68,22 L95,9 L88,30 L95,51 L68,38 C50,48 16,45 6,30 Z" fill="#e8b48a" />
           </svg>
-          AKWA
+          {SITE.nomCourt}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>
           <div style={{ fontSize: 68, lineHeight: 1.1, fontWeight: 700, maxWidth: 900 }}>

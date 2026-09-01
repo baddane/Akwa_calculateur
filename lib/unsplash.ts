@@ -6,7 +6,7 @@ export type Photo = {
   authorUrl: string;
 };
 
-const APP = "akwa_calculateur";
+const APP = "aquametre";
 const UTM = `utm_source=${APP}&utm_medium=referral`;
 export const UNSPLASH_URL = `https://unsplash.com/?${UTM}`;
 

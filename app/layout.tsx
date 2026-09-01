@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Spectral } from "next/font/google";
 import { OUTILS } from "@/lib/outils";
+import { SITE } from "@/lib/site";
 import "./globals.css";
 
 const spectral = Spectral({
@@ -12,14 +13,14 @@ const spectral = Spectral({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://akwa-calculateur.vercel.app"),
+  metadataBase: new URL(SITE.url),
   title: {
-    default: "Akwa — calculateurs pour aquarium d'eau douce",
-    template: "%s | Akwa",
+    default: `${SITE.nom} — ${SITE.accroche}`,
+    template: `%s | ${SITE.nom}`,
   },
   description:
     "Onze calculateurs gratuits pour dimensionner un aquarium d'eau douce : volume réel, poids en charge, population, filtration, éclairage, chauffage, coupe à l'eau osmosée et sécurité du verre.",
-  openGraph: { locale: "fr_FR", type: "website", siteName: "Akwa" },
+  openGraph: { locale: "fr_FR", type: "website", siteName: SITE.nom },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <svg width="20" height="13" viewBox="0 0 100 60" aria-hidden>
                 <path d="M6,30 C16,15 50,12 68,22 L95,9 L88,30 L95,51 L68,38 C50,48 16,45 6,30 Z" fill="currentColor" />
               </svg>
-              Akwa
+              {SITE.nom}
             </Link>
             <div className="topnav">
               <Link href="/">Assistant</Link>

@@ -120,7 +120,7 @@ export default async function Page() {
               <span key={p.id}>{i > 0 && ", "}
                 <a href={p.authorUrl} target="_blank" rel="noopener nofollow">{p.author}</a>
               </span>
-            ))} sur <a href="https://unsplash.com/?utm_source=akwa_calculateur&utm_medium=referral" target="_blank" rel="noopener nofollow">Unsplash</a>.
+            ))} sur <a href="https://unsplash.com/?utm_source=aquametre&utm_medium=referral" target="_blank" rel="noopener nofollow">Unsplash</a>.
           </p>
         )}
       </section>

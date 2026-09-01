@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { OUTILS, outilParSlug } from "@/lib/outils";
+import { SITE } from "@/lib/site";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -29,7 +30,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
           <svg width="32" height="20" viewBox="0 0 100 60">
             <path d="M6,30 C16,15 50,12 68,22 L95,9 L88,30 L95,51 L68,38 C50,48 16,45 6,30 Z" fill="#e8b48a" />
           </svg>
-          AKWA · {(o?.famille ?? "").toUpperCase()}
+          {SITE.nomCourt} · {(o?.famille ?? "").toUpperCase()}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ fontSize: 62, lineHeight: 1.12, fontWeight: 700, maxWidth: 960 }}>
@@ -40,7 +41,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
           </div>
         </div>
         <div style={{ fontSize: 24, color: "#8fa0ba" }}>
-          akwa-calculateur.vercel.app
+          aquametre.fr
         </div>
       </div>
     ),

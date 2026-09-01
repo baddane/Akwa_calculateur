@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { VolumeInput } from "@/lib/aqua";
 
-const CLE = "akwa.bac";
+const CLE = "aquametre.bac";
 const DEFAUT: VolumeInput = { longueur: 80, largeur: 35, hauteur: 45, substrat: 5, decor: 10 };
 
 /** Le profil de bac suit l'utilisateur d'un calculateur à l'autre : il saisit ses
