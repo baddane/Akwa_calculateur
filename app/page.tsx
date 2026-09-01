@@ -18,6 +18,16 @@ const SUJETS = [
     txt: "Trois à six semaines pour que les bactéries s'installent. Tant que le test de nitrites n'est pas revenu à zéro, aucune introduction." },
 ];
 
+
+const CAS = [
+  { q: "Je démarre mon premier bac, par quoi commencer ?", href: "/calculateurs/kit", ou: "Kit de démarrage" },
+  { q: "Combien de poissons dans mon 100 litres ?", href: "/calculateurs/population", ou: "Population" },
+  { q: "Quel filtre pour un bac planté ?", href: "/calculateurs/filtration", ou: "Filtration" },
+  { q: "Mon eau est trop dure pour des crevettes", href: "/calculateurs/eau-osmosee", ou: "Coupe à l'osmosée" },
+  { q: "Mon plancher supportera-t-il 200 litres ?", href: "/calculateurs/poids", ou: "Poids en charge" },
+  { q: "J'ai récupéré un bac d'occasion, est-il sûr ?", href: "/calculateurs/verre", ou: "Sécurité du verre" },
+];
+
 export default async function Page() {
   const [hero, ...vignettes] = await Promise.all([
     getPhoto(PHOTOS.hero, 1800),
@@ -50,6 +60,18 @@ export default async function Page() {
 
       <main className="wrap">
         <Wizard />
+
+        <section className="cas">
+          <h2>Les questions qui amènent ici</h2>
+          <div className="cas-liste">
+            {CAS.map((c) => (
+              <Link key={c.href} href={c.href} className="cas-item">
+                <span className="cas-q">{c.q}</span>
+                <span className="cas-ou">{c.ou}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         <section className="fam" style={{ marginTop: 46 }}>
           <h2>Ou allez droit au calculateur qu&apos;il vous faut</h2>
