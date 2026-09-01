@@ -8,7 +8,8 @@ import {
 import { useTank } from "../useTank";
 import { Champ, Stat, Achat } from "../ui";
 import { amz } from "@/lib/amazon";
-import { IconeMateriel, type Icone } from "../Icones";
+import { VisuelMateriel, type Icone } from "../Icones";
+import type { Visuels } from "@/lib/catalogue";
 
 function Cotes({ bac, set }: { bac: ReturnType<typeof useTank>["bac"]; set: ReturnType<typeof useTank>["set"] }) {
   return (
@@ -139,7 +140,7 @@ export function Chauffage() {
   );
 }
 
-export function Kit() {
+export function Kit({ visuels = {} }: { visuels?: Visuels }) {
   const { bac, set } = useTank();
   const [profil, setProfil] = useState<Profil>("communautaire");
   const [plante, setPlante] = useState(true);
@@ -171,7 +172,7 @@ export function Kit() {
         </div>
         {kit.map((l, i) => (
           <div className="buyrow" key={i}>
-            <span className="buyico"><IconeMateriel nom={l.icone as Icone} /></span>
+            <VisuelMateriel nom={l.icone as Icone} visuel={visuels[l.icone]} />
             <div className="buytxt">
               <b>{l.poste}{!l.essentiel && <em> · confort</em>}</b>
               <span>{l.specif}</span>

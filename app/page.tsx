@@ -4,6 +4,7 @@ import { Credit } from "@/components/Credit";
 import { getPhoto, PHOTOS, type Photo } from "@/lib/unsplash";
 import { OUTILS, FAMILLES } from "@/lib/outils";
 import { SchemaSite } from "@/components/Schema";
+import { chargerVisuels } from "@/lib/catalogue";
 
 export const revalidate = 86400;
 
@@ -34,6 +35,7 @@ export default async function Page() {
     ...SUJETS.map((s) => getPhoto(PHOTOS[s.cle], 800)),
   ]);
   const cartes = SUJETS.map((s, i) => ({ ...s, photo: vignettes[i] }));
+  const visuels = await chargerVisuels();
   const credits = [hero, ...vignettes].filter(Boolean) as Photo[];
 
   return (
@@ -59,7 +61,7 @@ export default async function Page() {
       </header>
 
       <main className="wrap">
-        <Wizard />
+        <Wizard visuels={visuels} />
 
         <section className="cas">
           <h2>Les questions qui amènent ici</h2>

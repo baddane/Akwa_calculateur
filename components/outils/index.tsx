@@ -4,8 +4,9 @@ import { Volume, Poids, Substrat, Verre } from "./Essentiels";
 import { Population } from "./Population";
 import { ChangementEau, EauOsmosee } from "./Eau";
 import { Filtration, Eclairage, Chauffage, Kit } from "./Materiel";
+import type { Visuels } from "@/lib/catalogue";
 
-const OUTIL: Record<string, () => React.JSX.Element> = {
+const OUTIL: Record<string, (p: { visuels?: Visuels }) => React.JSX.Element> = {
   volume: Volume,
   poids: Poids,
   substrat: Substrat,
@@ -19,7 +20,7 @@ const OUTIL: Record<string, () => React.JSX.Element> = {
   kit: Kit,
 };
 
-export default function Outil({ slug }: { slug: string }) {
+export default function Outil({ slug, visuels }: { slug: string; visuels?: Visuels }) {
   const C = OUTIL[slug];
-  return C ? <C /> : null;
+  return C ? <C visuels={visuels} /> : null;
 }

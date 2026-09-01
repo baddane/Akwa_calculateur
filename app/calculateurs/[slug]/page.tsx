@@ -6,6 +6,7 @@ import Outil from "@/components/outils";
 import { CONTENU } from "@/lib/contenu";
 import { SchemaOutil } from "@/components/Schema";
 import { Methode, Faq } from "@/components/Contenu";
+import { chargerVisuels } from "@/lib/catalogue";
 
 export function generateStaticParams() {
   return OUTILS.map((o) => ({ slug: o.slug }));
@@ -30,6 +31,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   const voisins = OUTILS.filter((x) => x.famille === o.famille && x.slug !== o.slug);
   const c = CONTENU[o.slug];
+  const visuels = o.slug === "kit" ? await chargerVisuels() : {};
 
   return (
     <>
@@ -46,7 +48,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       </header>
 
       <main className="wrap">
-        <Outil slug={o.slug} />
+        <Outil slug={o.slug} visuels={visuels} />
 
         <Methode paragraphes={c.methode} titre={`Comment se calcule ${o.nom.toLowerCase()}`} />
         <Faq questions={c.faq} />

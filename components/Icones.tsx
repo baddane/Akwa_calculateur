@@ -88,6 +88,18 @@ const D: Record<Icone, React.JSX.Element> = {
   </>),
 };
 
+/** Photo produit si l'API Amazon en a fourni une, pictogramme sinon. */
+export function VisuelMateriel({ nom, visuel }: { nom: Icone; visuel?: { image: string; titre: string } }) {
+  if (visuel) {
+    return (
+      <span className="buyico buyphoto">
+        <img src={visuel.image} alt={visuel.titre.slice(0, 90)} loading="lazy" />
+      </span>
+    );
+  }
+  return <span className="buyico"><IconeMateriel nom={nom} /></span>;
+}
+
 export function IconeMateriel({ nom, taille = 31 }: { nom: Icone; taille?: number }) {
   return (
     <svg width={taille} height={taille} viewBox="0 0 48 48" aria-hidden

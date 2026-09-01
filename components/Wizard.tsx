@@ -8,7 +8,8 @@ import {
 import { amz } from "@/lib/amazon";
 import TankView from "./TankView";
 import { Fish } from "./Aqua";
-import { IconeMateriel, type Icone } from "./Icones";
+import { VisuelMateriel, type Icone } from "./Icones";
+import type { Visuels } from "@/lib/catalogue";
 import Link from "next/link";
 
 type Depart = "zero" | "bac";
@@ -28,7 +29,7 @@ const TYPES: { id: string; label: string; sous: string; profil: Profil; plante: 
   { id: "grands",  label: "Grands poissons",      sous: "Scalaires, cichlidés nains, gros mangeurs.", profil: "forte", plante: false },
 ];
 
-export default function Wizard() {
+export default function Wizard({ visuels = {} }: { visuels?: Visuels }) {
   const [etape, setEtape] = useState(0);
   const [depart, setDepart] = useState<Depart>("zero");
   const [taille, setTaille] = useState("80");
@@ -194,7 +195,7 @@ export default function Wizard() {
               </div>
               {lignes.map((l, i) => (
                 <div className="buyrow" key={i}>
-                  <span className="buyico"><IconeMateriel nom={l.icone as Icone} /></span>
+                  <VisuelMateriel nom={l.icone as Icone} visuel={visuels[l.icone]} />
                   <div className="buytxt">
                     <b>{l.poste}{!l.essentiel && <em> · confort</em>}</b>
                     <span>{l.specif}</span>
