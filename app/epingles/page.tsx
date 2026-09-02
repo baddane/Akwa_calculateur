@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { EPINGLES, type Epingle } from "@/lib/epingles";
+import { EPINGLES, CREDITS, type Epingle } from "@/lib/epingles";
 
 export const metadata: Metadata = { title: "Épingles", robots: { index: false, follow: false } };
 
@@ -39,6 +39,8 @@ export default function Epingles() {
     <div className="planche">
       {EPINGLES.map((e) => (
         <div key={e.id} id={`pin-${e.id}`} className={`pin tone-${e.ton} mise-${e.mise}`}>
+          <img className="pin-fond" src={`/fonds/${e.fond}.jpg`} alt="" />
+          <div className="pin-voile" />
           <div className="pin-kicker">{e.kicker}</div>
           <div className="pin-corps"><Corps e={e} /></div>
           <div className="pin-foot">
@@ -46,6 +48,7 @@ export default function Epingles() {
               <path d="M6,30 C16,15 50,12 68,22 L95,9 L88,30 L95,51 L68,38 C50,48 16,45 6,30 Z" fill="currentColor" />
             </svg>
             aquametre.fr
+            <span className="pin-credit">Photo {CREDITS[e.fond]} / Unsplash</span>
           </div>
         </div>
       ))}

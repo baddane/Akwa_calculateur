@@ -28,8 +28,25 @@ if (!ids.length) { console.error("Aucune épingle trouvée dans lib/epingles.ts"
 
 mkdirSync(SORTIE, { recursive: true });
 
-const serveur = spawn("npx", ["next", "start", "-p", String(PORT)], { stdio: "ignore" });
-const arreter = () => { try { serveur.kill(); } catch {} };
+// Un serveur resté d'une exécution précédente servirait un ancien build sans
+// qu'on s'en aperçoive : on refuse de démarrer si le port est déjà pris.
+try {
+  const sonde = await fetch(`http://127.0.0.1:${PORT}/`, { signal: AbortSignal.timeout(1500) });
+  if (sonde) {
+    console.error(`Le port ${PORT} est déjà occupé. Arrêtez le serveur qui y tourne, puis relancez.`);
+    process.exit(1);
+  }
+} catch { /* port libre, on continue */ }
+
+// `npx` lance un petit-fils : tuer le seul enfant laisserait le serveur vivant
+// et le prochain lancement échouerait sur le port occupé. On tue le groupe.
+const serveur = spawn("npx", ["next", "start", "-p", String(PORT)], { stdio: "ignore", detached: true });
+let arrete = false;
+const arreter = () => {
+  if (arrete) return;
+  arrete = true;
+  try { process.kill(-serveur.pid, "SIGKILL"); } catch { try { serveur.kill("SIGKILL"); } catch {} }
+};
 process.on("exit", arreter); process.on("SIGINT", () => { arreter(); process.exit(1); });
 
 // Attente que le serveur réponde, plutôt qu'un délai fixe
@@ -42,8 +59,29 @@ if (!pret) { console.error("Le serveur n'a pas démarré. Avez-vous lancé `npm 
 
 const navigateur = await chromium.launch(CHROME ? { executablePath: CHROME } : {});
 const page = await navigateur.newPage({ viewport: { width: 1200, height: 1700 } });
-await page.goto(`http://127.0.0.1:${PORT}/epingles`, { waitUntil: "networkidle" });
-await pause(1200);
+
+// `next start` répond 200 avant que sa feuille de style ne soit servable : la
+// première visite peut tomber sur une page non stylée, et les épingles sont
+// alors capturées à la taille du contenu au lieu de 1000 × 1500. On recharge
+// jusqu'à ce que la mise en page soit effectivement appliquée.
+let stylee = false;
+for (let essai = 1; essai <= 8 && !stylee; essai++) {
+  // `networkidle` n'aboutit pas de façon fiable avec vingt images de fond :
+  // on attend le DOM, puis explicitement le chargement des photos.
+  await page.goto(`http://127.0.0.1:${PORT}/epingles`, { waitUntil: "domcontentloaded", timeout: 60000 });
+  await page.waitForFunction(
+    () => [...document.images].every((i) => i.complete && i.naturalWidth > 0),
+    null, { timeout: 30000 }
+  ).catch(() => {});
+  await pause(600);
+  const boite = await page.locator(`#pin-${ids[0]}`).boundingBox().catch(() => null);
+  stylee = boite !== null && Math.round(boite.width) === 1000 && Math.round(boite.height) === 1500;
+  if (!stylee) console.log(`  mise en page pas encore appliquée, nouvel essai (${essai}/8)`);
+}
+if (!stylee) {
+  console.error("La feuille de style ne s'applique pas. Lancez `npm run build` puis réessayez.");
+  await navigateur.close(); arreter(); process.exit(1);
+}
 
 let faites = 0, sautees = 0;
 const manquantes = [];

@@ -235,21 +235,34 @@ footer p { margin: 0 0 10px; max-width: 78ch; }
   display: flex; flex-direction: column; color: #fdfbf5; position: relative; overflow: hidden;
   font-family: var(--serif), Georgia, serif;
 }
-.pin.tone-1 { background: linear-gradient(158deg, #1d2f4d 0%, #0d1626 100%); }
-.pin.tone-2 { background: linear-gradient(158deg, #14384a 0%, #081c28 100%); }
-.pin.tone-3 { background: linear-gradient(158deg, #3d2a24 0%, #1c110d 100%); }
-.pin.tone-4 { background: linear-gradient(158deg, #1c3d33 0%, #0a1f19 100%); }
-.pin::after {
-  content: ""; position: absolute; right: -200px; bottom: -280px; width: 760px; height: 760px;
-  border-radius: 50%; background: rgba(255, 255, 255, .045);
+.pin { background: #0d1626; }
+.pin-fond {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  z-index: 0; filter: saturate(1.18) brightness(1.12);
 }
+/* Le voile doit être franc : sur Pinterest, une épingle dont le texte lutte
+   contre la photo n'est lue par personne. La photo apporte l'atmosphère,
+   pas la lisibilité. */
+.pin-voile { position: absolute; inset: 0; z-index: 1; }
+/* Le tiers supérieur laisse la photo respirer, le bas s'assombrit franchement
+   pour porter le texte. Un voile uniforme masque la photo sans rien gagner en
+   lisibilité : autant garder un aplat. */
+.pin.tone-1 .pin-voile { background: linear-gradient(to bottom, rgba(11,20,36,.30) 0%, rgba(11,20,36,.42) 28%, rgba(10,17,32,.90) 52%, rgba(8,14,26,.97) 100%); }
+.pin.tone-2 .pin-voile { background: linear-gradient(to bottom, rgba(5,28,40,.30) 0%, rgba(5,28,40,.42) 28%, rgba(5,24,35,.90) 52%, rgba(4,18,28,.97) 100%); }
+.pin.tone-3 .pin-voile { background: linear-gradient(to bottom, rgba(34,20,14,.32) 0%, rgba(34,20,14,.45) 28%, rgba(28,16,11,.90) 52%, rgba(22,12,8,.97) 100%); }
+.pin.tone-4 .pin-voile { background: linear-gradient(to bottom, rgba(7,32,26,.30) 0%, rgba(7,32,26,.42) 28%, rgba(7,28,22,.90) 52%, rgba(6,22,18,.97) 100%); }
+.pin > *:not(.pin-fond):not(.pin-voile) { position: relative; z-index: 2; }
 .pin-kicker {
   font-family: ui-sans-serif, system-ui, sans-serif;
   font-size: 28px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase;
-  color: #e8b48a; flex: 0 0 auto;
+  color: #f0c9a4; flex: 0 0 auto;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .85), 0 0 3px rgba(0, 0, 0, .6);
 }
-.pin-corps { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
-.pin-punch { font-size: 78px; line-height: 1.09; font-weight: 700; letter-spacing: -.022em; text-wrap: balance; }
+.pin-corps { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 40px; min-height: 0; }
+.pin-punch {
+  font-size: 78px; line-height: 1.09; font-weight: 700; letter-spacing: -.022em; text-wrap: balance;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
+}
 .pin-big {
   font-size: 178px; line-height: 1; font-weight: 700; letter-spacing: -.045em;
   color: #e8b48a; margin: 44px 0; font-variant-numeric: tabular-nums;
@@ -270,6 +283,7 @@ footer p { margin: 0 0 10px; max-width: 78ch; }
   border-bottom: 1px solid rgba(253, 251, 245, .14); color: rgba(253, 251, 245, .88);
 }
 .pin-liste li::before { content: "✓"; position: absolute; left: 0; color: #e8b48a; font-weight: 700; }
+.pin-credit { margin-left: auto; font-size: 21px; font-weight: 400; color: rgba(253, 251, 245, .42); }
 .pin-foot {
   margin-top: auto; display: flex; align-items: center; gap: 16px;
   font-family: ui-sans-serif, system-ui, sans-serif; font-size: 30px; font-weight: 600;
