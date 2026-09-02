@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   description:
     "Onze calculateurs gratuits pour dimensionner un aquarium d'eau douce : volume réel, poids en charge, population, filtration, éclairage, chauffage, coupe à l'eau osmosée et sécurité du verre.",
   openGraph: { locale: "fr_FR", type: "website", siteName: SITE.nom },
+  // La vérification par DNS couvre le domaine entier et vaut mieux ; cette
+  // balise n'est là que pour qui préfère la méthode HTML.
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

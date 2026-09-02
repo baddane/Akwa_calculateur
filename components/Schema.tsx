@@ -44,9 +44,10 @@ export function SchemaOutil({ outil, faq }: { outil: Outil; faq: Question[] }) {
         applicationCategory: "UtilitiesApplication",
         applicationSubCategory: "Calculateur d'aquariophilie",
         operatingSystem: "Tout navigateur web",
-        inLanguage: "fr-FR",
         description: outil.description,
         isAccessibleForFree: true,
+        dateModified: outil.maj,
+        inLanguage: "fr-FR",
         offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
       }} />
       <Ld data={{
