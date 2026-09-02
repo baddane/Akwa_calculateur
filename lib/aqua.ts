@@ -345,32 +345,42 @@ export function calcVerre(longueur: number, hauteurEau: number, epaisseur: numbe
 /* ---------- 10. Éclairage ---------- */
 
 export type Exigence = "faible" | "moyenne" | "forte";
-export const EXIGENCES: Record<Exigence, { lmL: number; label: string; exemples: string }> = {
-  faible:  { lmL: 25, label: "Plantes faciles",   exemples: "Anubias, mousse de Java, Cryptocoryne, fougère de Java" },
-  moyenne: { lmL: 40, label: "Plantes moyennes",  exemples: "Vallisnéria, Hygrophila, Ludwigia, Echinodorus" },
-  forte:   { lmL: 65, label: "Plantes exigeantes", exemples: "Gazonnantes, Rotala rouges, plantes à CO2" },
+export const EXIGENCES: Record<Exigence, { lmDm2: number; label: string; exemples: string }> = {
+  faible:  { lmDm2: 55,  label: "Plantes faciles",    exemples: "Anubias, mousse de Java, Cryptocoryne, fougère de Java" },
+  moyenne: { lmDm2: 90,  label: "Plantes moyennes",   exemples: "Vallisnéria, Hygrophila, Ludwigia, Echinodorus" },
+  forte:   { lmDm2: 150, label: "Plantes exigeantes", exemples: "Gazonnantes, Rotala rouges, plantes à CO2" },
 };
 
 export type LumiereResult = { lumens: number; watts: number; rampe: string; majoration: boolean };
 
-export function calcLumiere(volumeNet: number, hauteurEau: number, longueur: number, ex: Exigence): LumiereResult {
-  const majoration = hauteurEau > 45;                 // la lumière s'atténue avec la profondeur
-  const lumens = volumeNet * EXIGENCES[ex].lmL * (majoration ? 1.3 : 1);
+/** La lumière entre par la surface de l'eau, elle ne se répartit pas dans le
+ *  volume : c'est la surface au sol qui commande, corrigée de la profondeur que
+ *  le faisceau doit traverser. Un modèle en lumens par litre surestime les
+ *  grands bacs, où le volume croît bien plus vite que la surface éclairée. */
+export function calcLumiere(surfaceDm2: number, hauteurEau: number, longueur: number, ex: Exigence): LumiereResult {
+  const profondeur = 1 + Math.max(0, hauteurEau - 30) / 100;
+  const lumens = surfaceDm2 * EXIGENCES[ex].lmDm2 * profondeur;
   return {
     lumens: Math.round(lumens / 100) * 100,
     watts: Math.round(lumens / 90),                   // environ 90 lm/W pour une rampe LED
     rampe: `${Math.max(20, longueur - 10)} à ${longueur} cm`,
-    majoration,
+    majoration: hauteurEau > 45,
   };
 }
 
 /* ---------- 11. Chauffage ---------- */
 
-export type ChauffeResult = { theorique: number; palier: number; deux: boolean; delta: number };
+export type ChauffeResult = { theorique: number; palier: number; nombre: number; deux: boolean; delta: number };
 
 export function calcChauffage(volumeNet: number, ambiante: number, cible: number): ChauffeResult {
   const delta = Math.max(0, cible - ambiante);
   const theorique = Math.max(volumeNet * 0.4, volumeNet * delta * 0.15);
-  const palier = PALIERS_CHAUFFAGE.find((p) => p >= theorique) ?? 300;
-  return { theorique: Math.round(theorique), palier, deux: volumeNet > 250, delta };
+  // Le plus gros modèle courant plafonne à 300 W. Au-delà, il faut répartir sur
+  // plusieurs résistances : proposer 300 W pour un besoin de 660 W reviendrait à
+  // recommander un chauffage incapable de tenir la consigne.
+  const maxi = PALIERS_CHAUFFAGE[PALIERS_CHAUFFAGE.length - 1];
+  const nombre = Math.max(1, Math.ceil(theorique / maxi));
+  const parUnite = theorique / nombre;
+  const palier = PALIERS_CHAUFFAGE.find((p) => p >= parUnite) ?? maxi;
+  return { theorique: Math.round(theorique), palier, nombre, deux: nombre > 1 || volumeNet > 250, delta };
 }

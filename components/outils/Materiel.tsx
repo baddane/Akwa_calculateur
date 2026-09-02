@@ -65,7 +65,7 @@ export function Eclairage() {
   const [ex, setEx] = useState<Exigence>("moyenne");
   const vol = useMemo(() => calcVolume(bac), [bac]);
   const hauteurEau = Math.max(0, bac.hauteur - 4 - bac.substrat);
-  const l = useMemo(() => calcLumiere(vol.net, hauteurEau, bac.longueur, ex), [vol.net, hauteurEau, bac.longueur, ex]);
+  const l = useMemo(() => calcLumiere(vol.surfaceEau, hauteurEau, bac.longueur, ex), [vol.surfaceEau, hauteurEau, bac.longueur, ex]);
   return (
     <div className="grid">
       <div className="card">
@@ -87,8 +87,9 @@ export function Eclairage() {
           <Stat k="Longueur de rampe" v={l.rampe} />
         </div>
         <p className="note">
-          Comptez {EXIGENCES[ex].lmL} lumens par litre net pour cette catégorie de plantes.
-          {l.majoration && " Votre colonne d'eau dépasse 45 cm, j'ai majoré de 30 % : la lumière s'atténue en traversant l'eau, et ce qui suffit en surface n'atteint plus le sol."}{" "}
+          Comptez {EXIGENCES[ex].lmDm2} lumens par décimètre carré de surface pour cette catégorie de
+          plantes, majorés selon la profondeur à traverser. La lumière entre par la surface de l&apos;eau :
+          c&apos;est elle qui commande, pas le volume.{" "}
           La puissance en watts n&apos;est donnée qu&apos;à titre indicatif, sur la base d&apos;environ 90 lumens par
           watt. Deux rampes de consommation identique peuvent éclairer du simple au double : c&apos;est le
           flux lumineux qui compte, jamais la consommation.
@@ -123,12 +124,14 @@ export function Chauffage() {
         <div className="stats">
           <Stat k="Écart à combler" v={c.delta} u="°C" />
           <Stat k="Besoin calculé" v={c.theorique} u="W" />
-          <Stat k="Modèle à prendre" v={c.palier} u="W" lead />
+          <Stat k={c.nombre > 1 ? `${c.nombre} modèles de` : "Modèle à prendre"} v={c.palier} u="W" lead />
         </div>
         <p className="note">
           Ce qui compte n&apos;est pas le volume seul mais l&apos;écart de {c.delta} °C à combler. Un chauffage
           trop juste tourne en continu sans jamais tenir la consigne, et rend l&apos;âme en une saison.
-          {c.deux && " Au-delà de 250 L, deux résistances de puissance moitié placées aux extrémités valent mieux qu'une seule : la chaleur se répartit, et une panne ne laisse pas le bac à l'abandon."}
+          {c.nombre > 1
+            ? ` Un seul modèle ne suffit pas : le plus gros du commerce plafonne à 300 W, et il vous en faut ${c.nombre}. Placez-les à distance l'un de l'autre, la chaleur se répartit et une panne ne laisse pas le bac à l'abandon.`
+            : c.deux && " Au-delà de 250 L, deux résistances de puissance moitié placées aux extrémités valent mieux qu'une seule : la chaleur se répartit, et une panne ne laisse pas le bac à l'abandon."}
         </p>
         <p className="note">
           Vérifiez toujours avec un thermomètre indépendant. Le thermostat intégré dérive avec le temps,

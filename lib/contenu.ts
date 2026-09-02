@@ -150,18 +150,18 @@ export const CONTENU: Record<string, Contenu> = {
   eclairage: {
     methode: [
       "L'éclairage se raisonne en lumens, jamais en watts. La correspondance entre les deux a changé du tout au tout avec la LED : une rampe de trente watts peut produire mille lumens comme trois mille selon sa qualité. Le watt mesure ce que vous payez, le lumen mesure ce que les plantes reçoivent.",
-      "Le besoin s'exprime en lumens par litre net, selon l'exigence des plantes retenues. Comptez vingt-cinq lumens par litre pour les plantes faciles, anubias, mousses et cryptocorynes, quarante pour les plantes moyennes, et soixante-cinq et plus pour les gazonnantes et les rotalas rouges, qui réclament en outre un apport de gaz carbonique.",
+      "Le besoin se calcule sur la surface au sol, et non sur le volume : la lumière entre par la surface de l'eau, elle ne se répartit pas dans les litres. Comptez cinquante-cinq lumens par décimètre carré pour les plantes faciles, anubias, mousses et cryptocorynes, quatre-vingt-dix pour les plantes moyennes, et cent cinquante pour les gazonnantes et les rotalas rouges, qui réclament en outre un apport de gaz carbonique. Un raisonnement en lumens par litre surestime lourdement les grands bacs, où le volume croît bien plus vite que la surface éclairée.",
       "La lumière s'atténue en traversant l'eau, et ce qui suffit en surface n'atteint plus le sol. Au-delà de quarante-cinq centimètres de colonne d'eau, il faut majorer d'environ trente pour cent. La durée compte autant que l'intensité : huit heures par jour sur minuterie suffisent, et au-delà vous nourrissez surtout les algues, qui profitent de l'excès bien plus vite que les plantes.",
     ],
     faq: [
       { q: "Combien de lumens pour un aquarium planté de 100 litres ?",
-        r: "Sur 75 litres nets et des plantes moyennes, comptez environ 3 000 lumens, soit une rampe LED de 30 à 35 watts. Pour des plantes faciles, 1 900 lumens suffisent. Pour des gazonnantes, visez 5 000 lumens et prévoyez un apport de CO2, sans lequel l'excès de lumière ne produira que des algues." },
+        r: "Un bac de 100 litres mesure typiquement 80 par 35 centimètres, soit 28 décimètres carrés de surface. Avec des plantes moyennes, comptez environ 2 600 lumens, soit une rampe LED de 30 watts. Pour des plantes faciles, 1 600 lumens suffisent. Pour des gazonnantes, visez 4 400 lumens et prévoyez un apport de CO2, sans lequel l'excès de lumière ne produira que des algues." },
       { q: "Combien d'heures d'éclairage par jour ?",
         r: "Huit heures, sur minuterie, sans exception ni rattrapage. Un éclairage irrégulier ou trop long déséquilibre le rapport entre plantes et algues au profit des secondes. En cas de poussée d'algues, réduisez à six heures pendant deux semaines plutôt que d'augmenter la puissance." },
       { q: "Faut-il un éclairage spécial pour les plantes ?",
         r: "Le spectre compte autant que le flux. Les plantes utilisent surtout le bleu et le rouge ; une rampe dite plantes renforce ces bandes. Une LED blanche de bricolage éclaire l'œil mais nourrit mal, et sa température de couleur trop froide donne un rendu bleuté peu flatteur." },
       { q: "Puis-je garder l'éclairage d'origine de mon aquarium ?",
-        r: "Souvent non pour un bac planté. Les rampes livrées avec les kits sont dimensionnées pour éclairer, pas pour faire pousser, et plafonnent fréquemment autour de dix lumens par litre. Vérifiez le flux annoncé en lumens : s'il n'est pas indiqué, c'est généralement mauvais signe." },
+        r: "Souvent non pour un bac planté. Les rampes livrées avec les kits sont dimensionnées pour éclairer, pas pour faire pousser, et fournissent couramment le tiers de ce qu'il faudrait. Vérifiez le flux annoncé en lumens : s'il n'est pas indiqué sur la fiche, c'est généralement mauvais signe." },
     ],
   },
 
@@ -173,7 +173,7 @@ export const CONTENU: Record<string, Contenu> = {
     ],
     faq: [
       { q: "Quelle puissance de chauffage pour un aquarium de 200 litres ?",
-        r: "Sur environ 150 litres nets, dans une pièce descendant à 19 °C et pour une consigne à 25 °C, le besoin tourne autour de 135 watts, soit un modèle de 150 watts. Si la pièce descend à 15 °C en hiver, il faut passer à 200 watts, voire à deux résistances de 100 watts." },
+        r: "Sur environ 150 litres nets, dans une pièce descendant à 19 °C et pour une consigne à 25 °C, le besoin tourne autour de 135 watts, soit un modèle de 150 watts. Si la pièce descend à 15 °C en hiver, le besoin grimpe à 250 watts. Retenez que le plus gros modèle courant plafonne à 300 watts : au-delà, il faut répartir sur deux résistances ou plus, jamais se contenter du plus puissant disponible." },
       { q: "Faut-il un chauffage en été ?",
         r: "Il reste branché toute l'année : son rôle est de tenir une consigne, pas de chauffer en permanence. En été il ne se déclenchera simplement pas. Le vrai problème estival est inverse, la surchauffe au-delà de 29 °C, qui se traite par un ventilateur de surface et une baisse du niveau d'éclairage." },
       { q: "Mon chauffage tourne en permanence, est-ce normal ?",

@@ -62,7 +62,9 @@ export function Poids() {
   const [decor, setDecor] = useState(10);
   const vol = useMemo(() => calcVolume(bac), [bac]);
   const p = useMemo(() => calcPoids(bac, vol, ep, decor), [bac, vol, ep, decor]);
-  const lourd = p.auSol > 350;
+  // Le kg/m² d'un bac dépasse toujours 350 : c'est la charge totale qui décide
+  // si un plancher mérite un examen, pas la pression sous une petite emprise.
+  const lourd = p.total > 200;
   return (
     <div className="grid">
       <div className="card">
@@ -80,11 +82,11 @@ export function Poids() {
           <Stat k="Total" v={p.total} u="kg" lead />
         </div>
         <p style={{ marginTop: 16 }}>
-          <Verdict mot={`${p.auSol} kg par m²`} ton={lourd ? "warn" : "ok"} />
+          <Verdict mot={`${p.total} kg au total, ${p.auSol} kg par m²`} ton={lourd ? "warn" : "ok"} />
         </p>
         <p className="note">
           {lourd
-            ? "Au-delà de 350 kg au mètre carré, un plancher bois ancien mérite d'être regardé de près, et le bac doit reposer sur un meuble dédié, posé perpendiculairement aux solives quand c'est possible."
+            ? "Au-delà de 200 kg, un plancher bois ancien mérite d'être regardé de près, et le bac doit reposer sur un meuble dédié, posé perpendiculairement aux solives quand c'est possible."
             : "Cette charge passe sans difficulté sur un plancher sain, à condition que le meuble soit dédié et parfaitement de niveau."}{" "}
           Un défaut de planéité concentre l&apos;effort sur un angle et fait céder la cuve : la mise à niveau
           n&apos;est pas un détail de finition.

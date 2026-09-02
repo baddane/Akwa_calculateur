@@ -28,7 +28,7 @@ export const OUTILS: Outil[] = [
     description: "Calculez le poids total d'un aquarium en eau : verre, eau, substrat et décor, plus la charge au mètre carré. À vérifier avant de poser un bac sur un meuble ou un plancher.",
     h1: "Combien pèsera votre aquarium une fois rempli ?",
     intro: "Un bac vide se porte à deux. Le même bac en eau dépasse souvent le poids d'un piano droit, concentré sur moins d'un demi-mètre carré. C'est la vérification qu'on saute, et celle qui coûte le plus cher quand un meuble cède ou qu'un plancher ancien travaille.",
-  maj: "2026-08-31",
+  maj: "2026-09-02",
   },
   {
     slug: "substrat", nom: "Substrat", famille: "Les essentiels",
@@ -84,7 +84,7 @@ export const OUTILS: Outil[] = [
     description: "Calculez la puissance d'éclairage nécessaire en lumens et en watts selon le volume, la hauteur d'eau et l'exigence de vos plantes.",
     h1: "Quel éclairage pour vos plantes ?",
     intro: "L'éclairage se raisonne en lumens, pas en watts : deux rampes de même consommation peuvent produire du simple au double. Et la lumière s'atténue en traversant l'eau, donc un bac haut réclame davantage qu'un bac bas de même contenance.",
-  maj: "2026-08-31",
+  maj: "2026-09-02",
   },
   {
     slug: "chauffage", nom: "Chauffage", famille: "Le matériel",
@@ -92,7 +92,7 @@ export const OUTILS: Outil[] = [
     description: "Calculez la puissance de chauffage nécessaire selon le volume net, la température de la pièce et la température visée dans le bac.",
     h1: "Quelle puissance de chauffage ?",
     intro: "Ce qui compte n'est pas le volume seul mais l'écart à combler entre la pièce et le bac. Un même aquarium dans une véranda non chauffée et dans un salon à 21 °C ne demande pas la même puissance, et un chauffage trop juste tourne en permanence sans jamais tenir la consigne.",
-  maj: "2026-08-31",
+  maj: "2026-09-02",
   },
   {
     slug: "kit", nom: "Kit de démarrage", famille: "Le matériel",
