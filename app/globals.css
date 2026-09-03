@@ -238,57 +238,68 @@ footer p { margin: 0 0 10px; max-width: 78ch; }
 .pin { background: #0d1626; }
 .pin-fond {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-  z-index: 0; filter: saturate(1.18) brightness(1.12);
+  z-index: 0; filter: saturate(1.14) brightness(1.04);
 }
-/* Le voile doit être franc : sur Pinterest, une épingle dont le texte lutte
-   contre la photo n'est lue par personne. La photo apporte l'atmosphère,
-   pas la lisibilité. */
+/* Deux zones franches plutôt qu'un dégradé mou. Le haut porte le texte et
+   reste opaque : au format du flux (236 px), un titre qui lutte contre une
+   photo n'est lu par personne. Le bas laisse la photo nette et lumineuse,
+   c'est elle qui arrête l'œil pendant le défilement. */
 .pin-voile { position: absolute; inset: 0; z-index: 1; }
-/* Le tiers supérieur laisse la photo respirer, le bas s'assombrit franchement
-   pour porter le texte. Un voile uniforme masque la photo sans rien gagner en
-   lisibilité : autant garder un aplat. */
-.pin.tone-1 .pin-voile { background: linear-gradient(to bottom, rgba(11,20,36,.30) 0%, rgba(11,20,36,.42) 28%, rgba(10,17,32,.90) 52%, rgba(8,14,26,.97) 100%); }
-.pin.tone-2 .pin-voile { background: linear-gradient(to bottom, rgba(5,28,40,.30) 0%, rgba(5,28,40,.42) 28%, rgba(5,24,35,.90) 52%, rgba(4,18,28,.97) 100%); }
-.pin.tone-3 .pin-voile { background: linear-gradient(to bottom, rgba(34,20,14,.32) 0%, rgba(34,20,14,.45) 28%, rgba(28,16,11,.90) 52%, rgba(22,12,8,.97) 100%); }
-.pin.tone-4 .pin-voile { background: linear-gradient(to bottom, rgba(7,32,26,.30) 0%, rgba(7,32,26,.42) 28%, rgba(7,28,22,.90) 52%, rgba(6,22,18,.97) 100%); }
+.pin.tone-1 { --v: 10, 18, 34; --vb: 8, 14, 26; }
+.pin.tone-2 { --v: 5, 26, 38; --vb: 4, 18, 28; }
+.pin.tone-3 { --v: 32, 18, 12; --vb: 22, 12, 8; }
+.pin.tone-4 { --v: 7, 32, 26; --vb: 6, 22, 18; }
+.pin-voile {
+  background: linear-gradient(to bottom,
+    rgba(var(--v), .96) 0%, rgba(var(--v), .95) 54%, rgba(var(--v), .60) 67%,
+    rgba(var(--v), .05) 78%, rgba(var(--v), .05) 88%, rgba(var(--vb), .62) 100%);
+}
+/* Une liste descend bien plus bas qu'un titre : le voile la suit, sinon les
+   dernières lignes tombent sur la photo en clair et deviennent illisibles. */
+.pin.mise-liste .pin-voile {
+  background: linear-gradient(to bottom,
+    rgba(var(--v), .96) 0%, rgba(var(--v), .95) 76%, rgba(var(--v), .58) 84%,
+    rgba(var(--v), .10) 92%, rgba(var(--vb), .62) 100%);
+}
 .pin > *:not(.pin-fond):not(.pin-voile) { position: relative; z-index: 2; }
 .pin-kicker {
   font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 28px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase;
+  font-size: 40px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
   color: #f0c9a4; flex: 0 0 auto;
   text-shadow: 0 2px 14px rgba(0, 0, 0, .85), 0 0 3px rgba(0, 0, 0, .6);
 }
-.pin-corps { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 40px; min-height: 0; }
+.pin-corps { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding-top: 30px; min-height: 0; }
 .pin-punch {
-  font-size: 78px; line-height: 1.09; font-weight: 700; letter-spacing: -.022em; text-wrap: balance;
+  font-size: 112px; line-height: 1.05; font-weight: 700; letter-spacing: -.022em; text-wrap: balance;
   text-shadow: 0 2px 18px rgba(0, 0, 0, .55);
 }
 .pin-big {
-  font-size: 178px; line-height: 1; font-weight: 700; letter-spacing: -.045em;
+  font-size: 210px; line-height: 1; font-weight: 700; letter-spacing: -.045em;
   color: #e8b48a; margin: 44px 0; font-variant-numeric: tabular-nums;
 }
 .pin-sub {
   font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 36px; line-height: 1.45; color: rgba(253, 251, 245, .78); margin-top: 40px;
+  font-size: 52px; line-height: 1.36; color: rgba(253, 251, 245, .86); margin-top: 40px;
 }
 .pin-big + .pin-sub { margin-top: 0; }
 .pin-duel { display: flex; align-items: center; gap: 40px; margin: 56px 0 0; }
 .pin-duel > div { flex: 1; }
-.pin-duel b { display: block; font-size: 82px; font-weight: 700; color: #e8b48a; letter-spacing: -.03em; }
-.pin-duel span { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 32px; color: rgba(253, 251, 245, .7); }
+.pin-duel b { display: block; font-size: 104px; font-weight: 700; color: #e8b48a; letter-spacing: -.03em; }
+.pin-duel span { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 42px; color: rgba(253, 251, 245, .7); }
 .pin-duel em { font-style: normal; font-size: 64px; color: rgba(253, 251, 245, .35); }
 .pin-liste { list-style: none; padding: 0; margin: 52px 0 0; font-family: ui-sans-serif, system-ui, sans-serif; }
 .pin-liste li {
-  font-size: 38px; line-height: 1.4; padding: 20px 0 20px 52px; position: relative;
+  font-size: 46px; line-height: 1.35; padding: 18px 0 18px 56px; position: relative;
   border-bottom: 1px solid rgba(253, 251, 245, .14); color: rgba(253, 251, 245, .88);
 }
 .pin-liste li::before { content: "✓"; position: absolute; left: 0; color: #e8b48a; font-weight: 700; }
-.pin-credit { margin-left: auto; font-size: 21px; font-weight: 400; color: rgba(253, 251, 245, .42); }
+.pin-credit { margin-left: auto; font-size: 21px; font-weight: 400; color: rgba(253, 251, 245, .58); }
 .pin-foot {
   margin-top: auto; display: flex; align-items: center; gap: 16px;
   font-family: ui-sans-serif, system-ui, sans-serif; font-size: 30px; font-weight: 600;
-  color: rgba(253, 251, 245, .6); padding-top: 40px;
-  border-top: 2px solid rgba(253, 251, 245, .16); position: relative; z-index: 1;
+  color: rgba(253, 251, 245, .82); padding-top: 40px;
+  border-top: 2px solid rgba(253, 251, 245, .22); position: relative; z-index: 1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .9);
 }
 
 /* ---------------- Assistant guidé ---------------- */

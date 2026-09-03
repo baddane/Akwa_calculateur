@@ -1,5 +1,8 @@
 /**
- * Rend en PNG 1000 × 1500 toutes les épingles définies dans lib/epingles.ts.
+ * Rend en PNG 1000 × 1500 toutes les épingles définies dans lib/epingles.ts,
+ * et en dépose une copie JPEG dans public/pins/ : c'est cette copie que
+ * l'import en masse Pinterest va chercher (voir scripts/planifier-epingles.mjs,
+ * qui construit les URL à partir du même nom de fichier).
  * Ne re-rend que celles qui manquent, sauf avec --tout.
  *
  *   node scripts/rendre-epingles.mjs [--tout] [--sortie <dossier>]
@@ -7,13 +10,17 @@
  * Prérequis : npm install fait, et Chromium disponible.
  */
 import { chromium } from "playwright";
+import sharp from "sharp";
 import { spawn } from "node:child_process";
 import { mkdirSync, existsSync, readFileSync } from "node:fs";
 import { setTimeout as pause } from "node:timers/promises";
 
 const args = process.argv.slice(2);
 const TOUT = args.includes("--tout");
-const SORTIE = args[args.indexOf("--sortie") + 1] ?? "epingles-rendues";
+// indexOf renvoie -1 quand l'option est absente : sans ce garde-fou,
+// args[0] passait pour le dossier de sortie.
+const iSortie = args.indexOf("--sortie");
+const SORTIE = iSortie !== -1 ? args[iSortie + 1] : "epingles-rendues";
 const PORT = 4123;
 
 const CHROME = [
@@ -26,7 +33,9 @@ const src = readFileSync(new URL("../lib/epingles.ts", import.meta.url), "utf8")
 const ids = [...src.matchAll(/^\s*\{\s*id:\s*"([^"]+)"/gm)].map((m) => m[1]);
 if (!ids.length) { console.error("Aucune épingle trouvée dans lib/epingles.ts"); process.exit(1); }
 
+const PUBLIC = "public/pins";
 mkdirSync(SORTIE, { recursive: true });
+mkdirSync(PUBLIC, { recursive: true });
 
 // Un serveur resté d'une exécution précédente servirait un ancien build sans
 // qu'on s'en aperçoive : on refuse de démarrer si le port est déjà pris.
@@ -96,6 +105,9 @@ for (const [i, id] of ids.entries()) {
   if (Math.round(boite.width) !== 1000 || Math.round(boite.height) !== 1500) {
     manquantes.push(`${id} (${Math.round(boite.width)}×${Math.round(boite.height)})`);
   }
+  // Le PNG pèse 1,5 Mo ; Pinterest plafonne l'import à 20 Mo par image mais
+  // télécharge chaque URL, donc autant servir un JPEG de 200 Ko.
+  await sharp(chemin).jpeg({ quality: 88, mozjpeg: true }).toFile(`${PUBLIC}/${num}-${id}.jpg`);
   faites++;
 }
 
@@ -103,4 +115,5 @@ await navigateur.close();
 arreter();
 
 console.log(`${faites} épingle(s) rendue(s), ${sautees} déjà présente(s), dans ${SORTIE}/`);
+if (faites) console.log(`Copies JPEG pour l\u2019import Pinterest dans ${PUBLIC}/`);
 if (manquantes.length) { console.error("Problèmes :", manquantes.join(", ")); process.exit(1); }
