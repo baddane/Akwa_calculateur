@@ -457,6 +457,46 @@ export const EPINGLES: Epingle[] = [
     tableau: TABLEAUX.materiel,
     titre: "Faut-il débrancher le chauffage de l'aquarium en été ?",
     description: "Faut-il débrancher le chauffage de l'aquarium en été ? Non : il tient une consigne et ne se déclenche pas quand l'eau est assez chaude, et il sera prêt pour la première nuit fraîche. Le vrai risque d'été est la surchauffe au-delà de 29 °C. Le guide du chauffage explique la puissance à choisir et les bons réglages. #aquariophilie #chauffage #été" },
+
+  // Guide « kit aquarium débutant ». La première sert aussi d'image de partage
+  // de la page (lib/guides.ts) : ne pas la déplacer, son nom de fichier en dépend.
+  { id: "guide-kit-etapes", priorite: 1, mise: "liste", ton: 1, kicker: "Premier aquarium",
+    punch: "Démarrer un aquarium en 4 étapes",
+    items: ["Jour 1 : installation et mise en eau", "Semaines 1 à 6 : cycle de l'azote", "Nitrites à zéro : premiers poissons", "Chaque semaine : 20 à 25\u00a0% d'eau"],
+    fond: "bac-bureau",
+    vers: `${U}/guides/kit-aquarium-debutant`,
+    tableau: TABLEAUX.debutant,
+    titre: "Démarrer un aquarium : les 4 étapes avant les premiers poissons",
+    description: "Comment démarrer un aquarium quand on débute ? Installation et mise en eau le premier jour, trois à six semaines de cycle de l'azote filtre en marche, premiers poissons quand les nitrites sont à zéro, puis 20 à 25 % d'eau changée chaque semaine. Le guide détaille le matériel à prévoir pour 60, 120 et 200 litres. #aquariophilie #débutant #aquarium" },
+
+  { id: "guide-kit-carte", priorite: 1, mise: "duel", ton: 2, kicker: "Premier achat",
+    punch: "Kit complet ou matériel à la carte ?",
+    gauche: { t: "Kit", s: "Tout assorti" },
+    droite: { t: "Séparé", s: "Pièce par pièce" },
+    sub: "Dans les deux cas, il faudra ajouter les consommables.",
+    fond: "plante-racine",
+    vers: `${U}/guides/kit-aquarium-debutant`,
+    tableau: TABLEAUX.debutant,
+    titre: "Kit aquarium complet ou matériel séparé : que choisir pour débuter ?",
+    description: "Kit aquarium complet ou matériel acheté séparément ? Le kit est le plus simple pour débuter, à condition de vérifier le chauffage, le débit du filtre et l'éclairage. À la carte, chaque pièce est à la bonne taille. Le guide compare les deux et liste ce que les kits ne fournissent presque jamais. #aquarium #débutant #matériel" },
+
+  { id: "guide-kit-taille", priorite: 1, mise: "stat", ton: 3, kicker: "Premier aquarium",
+    punch: "La bonne taille pour débuter",
+    big: "100\u00a0L", sub: "Entre 60 et 120\u00a0L, l'eau reste stable. Un nano pardonne moins.",
+    fond: "plantes-bleu",
+    vers: `${U}/guides/kit-aquarium-debutant`,
+    tableau: TABLEAUX.debutant,
+    titre: "Quelle taille d'aquarium pour débuter ?",
+    description: "Quelle taille d'aquarium choisir pour un premier bac ? Entre 60 et 120 litres : plus le volume d'eau est grand, plus les paramètres restent stables et plus une erreur se rattrape. Les nano-aquariums paraissent simples mais pardonnent moins. Le guide donne le matériel dimensionné pour chaque taille. #aquarium #débutant #aquariophilie" },
+
+  { id: "guide-kit-poissons", priorite: 1, mise: "liste", ton: 4, kicker: "Après le cycle",
+    punch: "Quels poissons pour un premier bac ?",
+    items: ["Guppys : 3 au moins", "Platys : 3 au moins", "Corydoras : groupe de 6", "Néons : groupe de 10, en dernier"],
+    fond: "banc-plante",
+    vers: `${U}/guides/kit-aquarium-debutant`,
+    tableau: TABLEAUX.poissons,
+    titre: "Quels poissons choisir pour un premier aquarium ?",
+    description: "Quels poissons pour débuter en aquariophilie ? Des espèces robustes et paisibles, en petits groupes : guppys et platys, corydoras au fond par six au moins, et les néons en dernier, une fois l'eau stabilisée. Le guide du débutant donne le volume minimum et la température de chaque espèce. #aquariophilie #débutant #poissons" },
 ];
 
 export const CREDITS: Record<string, string> = {

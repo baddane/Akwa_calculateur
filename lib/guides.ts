@@ -30,4 +30,13 @@ export const GUIDES: Guide[] = [
     image: "/pins/25-guide-chauffage-liste.jpg",
     maj: "2026-10-11",
   },
+  {
+    slug: "kit-aquarium-debutant",
+    nom: "Kit aquarium débutant",
+    titre: "Kit aquarium débutant : que choisir et quoi ajouter",
+    description: "Kit complet ou matériel à la carte, quelle taille pour un premier aquarium, la liste dimensionnée pour 60, 120 et 200 litres, ce qui manque presque toujours dans les kits et les étapes avant les premiers poissons.",
+    outil: "kit",
+    image: "/pins/45-guide-kit-etapes.jpg",
+    maj: "2026-10-11",
+  },
 ];
