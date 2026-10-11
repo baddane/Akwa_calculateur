@@ -1,14 +1,22 @@
 // ==UserScript==
 // @name         Pinterest - Publication automatique de pins
 // @namespace    baddane.tools
-// @version      1.0
+// @version      1.1
 // @require      https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
 // @description  Publie des pins automatiquement depuis un fichier Excel (max 10/jour), avec délais aléatoires pour éviter le bannissement.
 // @match        https://www.pinterest.com/*
 // @match        https://pinterest.com/*
-// @grant        none
+// @match        https://*.pinterest.com/*
+// @match        https://*.pinterest.fr/*
+// @grant        GM_xmlhttpRequest
+// @connect      *
 // @run-at       document-idle
 // ==/UserScript==
+
+/*
+FICHIER PRÊT À L'EMPLOI POUR AQUAMETRE :
+  npm run epingles:tampermonkey   → epingles-tampermonkey.csv (à charger dans le panneau)
+*/
 
 /*
 FORMAT DU FICHIER EXCEL (colonnes) :
@@ -49,14 +57,35 @@ LIMITES DE SÉCURITÉ :
   const sauverJournal = j => { try { localStorage.setItem(KEY_JOURNAL, JSON.stringify(j)); } catch (e) {} };
 
   // ---------- Quota journalier ----------
+  // Date locale : toISOString() donne la date UTC, et le compteur ne repartait
+  // donc pas à minuit heure locale.
+  const jourLocal = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
   function getQuota() {
     try {
       const q = JSON.parse(localStorage.getItem(KEY_QUOTA)) || {};
-      const aujourdhui = new Date().toISOString().slice(0, 10);
+      const aujourdhui = jourLocal();
       if (q.date !== aujourdhui) return { date: aujourdhui, count: 0 };
       return q;
-    } catch (e) { return { date: new Date().toISOString().slice(0, 10), count: 0 }; }
+    } catch (e) { return { date: jourLocal(), count: 0 }; }
   }
+
+  // ---------- Un seul onglet publie à la fois ----------
+  // Deux onglets Pinterest ouverts reprenaient chacun la file au chargement et
+  // publiaient en parallèle, doublant le rythme et le quota réel.
+  const ONGLET = Math.random().toString(36).slice(2);
+  const BATTEMENT_MAX = 3 * 60 * 1000; // un onglet en arrière-plan ne bat qu'une fois par minute
+  function prendreMain(s) {
+    if (s.onglet && s.onglet !== ONGLET && Date.now() - (s.battement || 0) < BATTEMENT_MAX) return false;
+    s.onglet = ONGLET; s.battement = Date.now(); sauver(s);
+    return true;
+  }
+  setInterval(() => {
+    const s = charger();
+    if (s && s.enCours && s.onglet === ONGLET) { s.battement = Date.now(); sauver(s); }
+  }, 20000);
+
+  // Erreur qui ne concerne que ce pin (image) : on le saute au lieu de tout arrêter.
+  const erreurImage = msg => Object.assign(new Error(msg), { image: true });
   function incrQuota() {
     const q = getQuota();
     q.count++;
@@ -77,8 +106,19 @@ LIMITES DE SÉCURITÉ :
     const appEl = document.getElementById('__PWS_DATA__') || document.querySelector('[data-relay-response]');
     let username = '';
 
+    // Méthode 0 : l'utilisateur connecté, dans le contexte que Pinterest injecte.
+    // La méthode 1 seule prenait le premier "username" venu, qui sur une page
+    // de pin ou de profil est souvent celui d'un autre compte.
+    for (const id of ['__PWS_INITIAL_PROPS__', '__PWS_DATA__']) {
+      try {
+        const d = JSON.parse(document.getElementById(id)?.textContent || 'null');
+        const u = d?.context?.user?.username || d?.props?.context?.user?.username || d?.initialReduxState?.viewer?.username;
+        if (u) { username = u; break; }
+      } catch (e) {}
+    }
+
     // Méthode 1 : chercher dans les données de la page
-    try {
+    if (!username) try {
       const scripts = document.querySelectorAll('script[type="application/json"]');
       for (const s of scripts) {
         const d = JSON.parse(s.textContent);
@@ -119,37 +159,61 @@ LIMITES DE SÉCURITÉ :
 
     if (!username) throw new Error('Impossible de détecter votre nom d\'utilisateur Pinterest. Connectez-vous d\'abord.');
 
-    // Récupérer les tableaux
-    const resp = await fetch('/resource/BoardsResource/get/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest', 'X-APP-VERSION': 'unknown' },
-      credentials: 'include',
-      body: new URLSearchParams({
-        source_url: `/${username}/`,
-        data: JSON.stringify({
-          options: {
-            username: username,
-            field_set_key: 'profile_grid_item',
-            filter: 'all',
-            sort: 'last_pinned_to',
-            page_size: 50
-          },
-          context: {}
+    // Récupérer les tableaux, page par page : au-delà de 50 tableaux, ceux qui
+    // n'avaient pas reçu de pin récemment passaient pour introuvables.
+    const tous = [];
+    let bookmark = null;
+    for (let page = 0; page < 20; page++) {
+      const resp = await fetch('/resource/BoardsResource/get/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest', 'X-APP-VERSION': 'unknown' },
+        credentials: 'include',
+        body: new URLSearchParams({
+          source_url: `/${username}/`,
+          data: JSON.stringify({
+            options: {
+              username: username,
+              field_set_key: 'profile_grid_item',
+              filter: 'all',
+              sort: 'last_pinned_to',
+              page_size: 50,
+              ...(bookmark ? { bookmarks: [bookmark] } : {})
+            },
+            context: {}
+          })
         })
-      })
+      });
+      if (!resp.ok) throw new Error(`Erreur API boards : ${resp.status}`);
+      const data = await resp.json();
+      tous.push(...(data?.resource_response?.data || []).map(b => ({ id: b.id, name: b.name, url: b.url })));
+      bookmark = data?.resource_response?.bookmark || data?.resource?.options?.bookmarks?.[0];
+      if (!bookmark || bookmark === '-end-') break;
+    }
+    return tous;
+  }
+
+  // Les sites d'images n'envoient presque jamais d'en-tête CORS : un fetch()
+  // depuis pinterest.com échouait donc pour la plupart des images. Le
+  // téléchargement passe par Tampermonkey, qui n'est pas soumis à CORS.
+  function telechargerImage(url) {
+    return new Promise((resolve, reject) => {
+      GM_xmlhttpRequest({
+        method: 'GET', url, responseType: 'blob', timeout: 60000,
+        onload: r => (r.status >= 200 && r.status < 300 && r.response)
+          ? resolve(r.response)
+          : reject(erreurImage(`Image inaccessible : ${r.status} — ${url}`)),
+        onerror: () => reject(erreurImage(`Image inaccessible (réseau) — ${url}`)),
+        ontimeout: () => reject(erreurImage(`Image inaccessible (délai dépassé) — ${url}`))
+      });
     });
-    if (!resp.ok) throw new Error(`Erreur API boards : ${resp.status}`);
-    const data = await resp.json();
-    return (data?.resource_response?.data || []).map(b => ({ id: b.id, name: b.name, url: b.url }));
   }
 
   async function uploadImageFromUrl(imageUrl) {
     const csrf = getCsrfToken();
 
     // Télécharger l'image
-    const imgResp = await fetch(imageUrl, { mode: 'cors' });
-    if (!imgResp.ok) throw new Error(`Image inaccessible : ${imgResp.status} — ${imageUrl}`);
-    const blob = await imgResp.blob();
+    const blob = await telechargerImage(imageUrl);
+    if (blob.type && !/^image\//.test(blob.type)) throw erreurImage(`Ce n'est pas une image (${blob.type}) — ${imageUrl}`);
     const ext = imageUrl.split('.').pop().split('?')[0].toLowerCase();
     const mimeMap = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp' };
     const mime = blob.type || mimeMap[ext] || 'image/jpeg';
@@ -167,18 +231,21 @@ LIMITES DE SÉCURITÉ :
     });
     if (!resp.ok) {
       const txt = await resp.text();
-      throw new Error(`Upload image échoué (${resp.status}) : ${txt.slice(0, 200)}`);
+      throw erreurImage(`Upload image échoué (${resp.status}) : ${txt.slice(0, 200)}`);
     }
     const data = await resp.json();
-    if (!data.success) throw new Error('Upload image refusé par Pinterest : ' + JSON.stringify(data).slice(0, 200));
+    if (!data.success) throw erreurImage('Upload image refusé par Pinterest : ' + JSON.stringify(data).slice(0, 200));
     return data.image_url; // URL interne Pinterest de l'image uploadée
   }
 
   async function createPin({ title, description, link, imageUrl, boardId, altText }) {
     const csrf = getCsrfToken();
 
-    // D'abord uploader l'image
-    const uploadedImageUrl = await uploadImageFromUrl(imageUrl);
+    // D'abord uploader l'image. Si l'envoi échoue, on laisse Pinterest aller
+    // chercher l'image lui-même à son URL publique (méthode « scraped »).
+    let uploadedImageUrl = null;
+    try { uploadedImageUrl = await uploadImageFromUrl(imageUrl); }
+    catch (err) { if (!err.image) throw err; console.warn('[Auto-Pin] upload impossible, essai par URL :', err.message); }
 
     // Créer le pin
     const pinData = {
@@ -187,9 +254,9 @@ LIMITES DE SÉCURITÉ :
         description: description || '',
         link: link || '',
         title: title || '',
-        image_url: uploadedImageUrl,
-        method: 'uploaded',
-        upload_metric: { source: 'pinner_upload_standalone' },
+        image_url: uploadedImageUrl || imageUrl,
+        method: uploadedImageUrl ? 'uploaded' : 'scraped',
+        ...(uploadedImageUrl ? { upload_metric: { source: 'pinner_upload_standalone' } } : {}),
         user_mention_tags: []
       },
       context: {}
@@ -240,6 +307,10 @@ LIMITES DE SÉCURITÉ :
       if (!imageUrl) { erreurs.push(`Ligne ${n + 1} : URL image manquante`); return; }
       if (!tableau) { erreurs.push(`Ligne ${n + 1} : nom du tableau manquant`); return; }
       if (!/^https?:\/\//i.test(imageUrl)) { erreurs.push(`Ligne ${n + 1} : URL image invalide « ${imageUrl.slice(0, 50)} »`); return; }
+      if (lien && !/^https?:\/\//i.test(lien)) { erreurs.push(`Ligne ${n + 1} : lien invalide « ${lien.slice(0, 50)} »`); return; }
+      // La ligne d'exemple du modèle Excel n'est pas marquée « exemple » : sans
+      // ce garde-fou elle partait sur Pinterest comme un vrai pin.
+      if (/monsite\.com/i.test(lien + imageUrl)) { erreurs.push(`Ligne ${n + 1} : ligne d'exemple du modèle (monsite.com), à supprimer`); return; }
       pins.push({ titre: (titre || '').slice(0, 100), description: (description || '').slice(0, 500), lien: lien || '', imageUrl, tableau, altText: altText || '' });
     });
     return { pins, erreurs };
@@ -300,7 +371,9 @@ LIMITES DE SÉCURITÉ :
   function majBoutons() {
     const s = charger();
     const enCours = !!(s && s.enCours);
-    $('pin-ap-go').disabled = enCours || !plan || getQuota().count >= MAX_PAR_JOUR;
+    const aReprendre = !!(s && s.pins && s.i < s.pins.length);
+    $('pin-ap-go').disabled = enCours || !(plan || aReprendre) || getQuota().count >= MAX_PAR_JOUR;
+    $('pin-ap-go').textContent = !plan && aReprendre ? `Reprendre (${s.i}/${s.pins.length})` : 'Publier';
     $('pin-ap-ver').disabled = enCours;
     $('pin-ap-txt').disabled = enCours;
     $('pin-ap-file').disabled = enCours;
@@ -381,16 +454,32 @@ LIMITES DE SÉCURITÉ :
   };
 
   // ---------- Lancement / arrêt ----------
+  // Clé d'un pin : sert à ne pas republier ce que le journal marque déjà OK.
+  const cle = p => `${p.imageUrl}|${(p.boardName || p.tableau || '').toLowerCase()}`;
+
   $('pin-ap-go').onclick = () => {
-    if (!plan || getQuota().count >= MAX_PAR_JOUR) return;
-    sauver({ enCours: true, pins: plan, i: 0, debut: new Date().toISOString() });
+    if (getQuota().count >= MAX_PAR_JOUR) return;
+    const ancien = charger();
+    if (ancien && ancien.enCours && ancien.onglet && ancien.onglet !== ONGLET && Date.now() - (ancien.battement || 0) < BATTEMENT_MAX) {
+      log('⚠️ Un autre onglet Pinterest publie déjà. Fermez-le ou attendez qu\'il termine.'); return;
+    }
+    // Reprise : une file inachevée (quota atteint hier, arrêt manuel) repart
+    // où elle s'était arrêtée. Avant, « Publier » repartait de zéro et
+    // republiait en double les pins de la veille.
+    if (ancien && ancien.pins && ancien.i < ancien.pins.length && (!plan || plan.every((p, k) => ancien.pins[k] && cle(ancien.pins[k]) === cle(p)))) {
+      ancien.enCours = true; ancien.prochainA = 0; ancien.onglet = ONGLET; ancien.battement = Date.now();
+      sauver(ancien);
+    } else {
+      if (!plan) return;
+      sauver({ enCours: true, pins: plan, i: 0, debut: new Date().toISOString(), onglet: ONGLET, battement: Date.now() });
+    }
     majBoutons();
     publier();
   };
 
   $('pin-ap-stop').onclick = () => {
     const s = charger();
-    if (s) { s.enCours = false; sauver(s); }
+    if (s) { s.enCours = false; s.onglet = null; sauver(s); }
     $('pin-ap-timer').style.display = 'none';
     log('⏹ Arrêté. Les pins restants peuvent être repris en relançant.');
     majBoutons();
@@ -431,24 +520,53 @@ LIMITES DE SÉCURITÉ :
   }
 
   // ---------- Publication ----------
+  // Enregistre l'avancement sans écraser un « Arrêter » cliqué pendant l'envoi :
+  // la copie en mémoire gardait enCours = true et annulait l'arrêt.
+  function enregistrer(s) {
+    const disque = charger();
+    if (disque && !disque.enCours) s.enCours = false;
+    s.battement = Date.now();
+    sauver(s);
+  }
+
   async function publier() {
     const s = charger();
     if (!s || !s.enCours) return;
+    if (!prendreMain(s)) { log('⏸ Un autre onglet Pinterest publie déjà cette file.'); majBoutons(); return; }
 
     while (s.i < s.pins.length) {
       if (!charger()?.enCours) break;
 
+      // Délai anti-spam restant : enregistré, il survit à un rechargement de
+      // page. Avant, recharger relançait le pin suivant au bout de 2 s.
+      const attente = (s.prochainA || 0) - Date.now();
+      if (attente > 0) {
+        log(`⏳ Prochain pin (${s.i + 1}/${s.pins.length}) dans ~${Math.ceil(attente / 60000)} min (délai anti-spam)…`);
+        startCountdown(attente);
+        await sleep(attente);
+        $('pin-ap-timer').style.display = 'none';
+        if (!charger()?.enCours) break;
+      }
+
       // Vérifier le quota
       const q = getQuota();
       if (q.count >= MAX_PAR_JOUR) {
-        s.enCours = false; sauver(s);
+        s.enCours = false; s.onglet = null; sauver(s);
         $('pin-ap-timer').style.display = 'none';
-        log(`📊 Limite de ${MAX_PAR_JOUR} pins atteinte pour aujourd'hui.\n${s.pins.length - s.i} pin(s) restant(s) à publier demain.\n\nRelancez le script demain — il reprendra où il s'est arrêté.`);
+        log(`📊 Limite de ${MAX_PAR_JOUR} pins atteinte pour aujourd'hui.\n${s.pins.length - s.i} pin(s) restant(s) à publier demain.\n\nDemain, ouvrez Pinterest et cliquez « Reprendre » — la file repart où elle s'est arrêtée.`);
         majQuotaUI(); majBoutons();
         return;
       }
 
       const p = s.pins[s.i];
+
+      // Déjà publié (relance d'un même fichier) : on saute sans consommer de quota.
+      if (chargerJournal().some(j => j.statut === 'OK' && j.cle === cle(p))) {
+        log(`↷ Pin ${s.i + 1} déjà publié d'après le journal, ignoré.`);
+        s.i++; enregistrer(s);
+        continue;
+      }
+
       log(`⏳ Pin ${s.i + 1}/${s.pins.length} — « ${p.titre.slice(0, 40)} » → ${p.boardName}\nUpload de l'image…`);
 
       try {
@@ -462,51 +580,45 @@ LIMITES DE SÉCURITÉ :
         });
 
         const journal = chargerJournal();
-        journal.push({ titre: p.titre, tableau: p.boardName, lien: p.lien, statut: 'OK', pinId: pinId, le: new Date().toLocaleString('fr-FR') });
+        journal.push({ titre: p.titre, tableau: p.boardName, lien: p.lien, statut: 'OK', pinId: pinId, le: new Date().toLocaleString('fr-FR'), cle: cle(p) });
         sauverJournal(journal);
         incrQuota();
         majQuotaUI();
 
-        s.i++; sauver(s);
+        s.i++;
+        s.prochainA = Date.now() + rand(DELAI_MIN, DELAI_MAX);
+        enregistrer(s);
         log(`✅ Pin ${s.i}/${s.pins.length} publié — « ${p.titre.slice(0, 40)} »`);
 
       } catch (err) {
         const journal = chargerJournal();
-        journal.push({ titre: p.titre, tableau: p.boardName, lien: p.lien, statut: 'ERREUR', pinId: err.message.slice(0, 100), le: new Date().toLocaleString('fr-FR') });
+        journal.push({ titre: p.titre, tableau: p.boardName, lien: p.lien, statut: 'ERREUR', pinId: err.message.slice(0, 100), le: new Date().toLocaleString('fr-FR'), cle: cle(p) });
         sauverJournal(journal);
 
-        // Si c'est une erreur d'image (CORS, 404, etc.), passer au suivant
-        if (/image|upload|inaccessible|cors/i.test(err.message)) {
+        // Image introuvable : seul ce pin est en cause, on passe au suivant.
+        // Avant, le test portait sur le texte du message, et un refus de
+        // Pinterest qui citait « image_url » faisait continuer au lieu d'arrêter.
+        if (err.image) {
           log(`⚠️ Pin ${s.i + 1} — Image inaccessible, pin ignoré :\n${err.message.slice(0, 150)}`);
-          s.i++; sauver(s);
+          s.i++; enregistrer(s);
           await sleep(5000);
           continue;
         }
 
         // Sinon, arrêter (possible rate limit ou ban temporaire)
-        s.enCours = false; sauver(s);
+        s.enCours = false; s.onglet = null; sauver(s);
         $('pin-ap-timer').style.display = 'none';
-        log(`❌ Erreur sur le pin ${s.i + 1} :\n${err.message.slice(0, 300)}\n\nArrêt par sécurité. Attendez quelques minutes puis relancez.`);
+        log(`❌ Erreur sur le pin ${s.i + 1} :\n${err.message.slice(0, 300)}\n\nArrêt par sécurité. Attendez quelques heures puis cliquez « Reprendre ».`);
         majBoutons();
         return;
       }
-
-      // S'il reste des pins, attendre un délai aléatoire
-      if (s.i < s.pins.length && charger()?.enCours) {
-        const delai = rand(DELAI_MIN, DELAI_MAX);
-        const min = Math.round(delai / 60000);
-        log(`✅ Pin ${s.i}/${s.pins.length} publié.\n⏳ Prochain dans ~${min} min (délai anti-spam)…`);
-        startCountdown(delai);
-        await sleep(delai);
-        $('pin-ap-timer').style.display = 'none';
-      }
     }
 
-    // Tous terminés
     const s2 = charger();
-    if (s2) { s2.enCours = false; sauver(s2); }
     $('pin-ap-timer').style.display = 'none';
-    log(`✅ Terminé ! ${s.i} pin(s) publiés.\nExportez le journal pour contrôle.`);
+    if (s2 && !s2.enCours) { majQuotaUI(); majBoutons(); return; } // arrêté à la main
+    if (s2) { s2.enCours = false; s2.onglet = null; sauver(s2); }
+    log(`✅ Terminé ! ${s.pins.length} pin(s) traités.\nExportez le journal pour contrôle.`);
     majQuotaUI(); majBoutons();
   }
 
@@ -515,6 +627,8 @@ LIMITES DE SÉCURITÉ :
   if (s0 && s0.enCours) {
     log(`Reprise en cours… ${s0.i}/${s0.pins.length} pins traités.`);
     setTimeout(publier, 2000);
+  } else if (s0 && s0.pins && s0.i < s0.pins.length) {
+    log(`File en attente : ${s0.i}/${s0.pins.length} pins traités. Cliquez « Reprendre » pour continuer.`);
   } else {
     const journal = chargerJournal();
     if (journal.length) log(`Dernier journal : ${journal.length} pin(s). Cliquez « Journal CSV » pour exporter.`);

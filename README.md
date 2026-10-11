@@ -28,3 +28,18 @@ npm run dev
 ```bash
 npx vercel --prod
 ```
+
+## Publication Pinterest via Tampermonkey
+
+Alternative à l'import en masse (`npm run epingles:csv`) : le script
+`scripts/pinterest-auto-pins.user.js` publie depuis le navigateur, connecté au compte.
+
+1. Tampermonkey > Créer un nouveau script > coller le contenu du fichier > Enregistrer.
+   Accepter la demande d'accès aux domaines externes (téléchargement des images).
+2. `npm run epingles:tampermonkey` → `epingles-tampermonkey.csv`
+   (tableau « Aquariophilie » par défaut, variable `TABLEAU_PINTEREST` pour changer).
+3. Ouvrir pinterest.com, charger le CSV dans le panneau « Auto-Pin », Vérifier, Publier.
+
+Garde-fous : 10 pins par jour, 3 à 8 min entre deux, un seul onglet à la fois.
+Le lendemain, « Reprendre » continue la file ; un pin déjà publié d'après le journal
+n'est jamais republié. Laisser l'onglet ouvert pendant la publication.

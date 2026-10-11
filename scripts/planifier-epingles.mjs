@@ -12,6 +12,11 @@
  * site sert tels quels. Ils sont hors de /epingles, que robots.txt interdit :
  * sous ce préfixe, le robot de Pinterest ne pourrait pas les télécharger.
  * MEDIA_BASE permet de les héberger ailleurs.
+ *
+ * Avec --tampermonkey, écrit plutôt le fichier que charge le script
+ * scripts/pinterest-auto-pins.user.js (colonnes Titre, Description, Lien,
+ * Image URL, Tableau, Alt Text ; pas de date : le script publie au fil de l'eau,
+ * 10 par jour au plus).
  */
 import { writeFileSync } from "node:fs";
 
@@ -20,7 +25,8 @@ const opt = (nom, defaut) => { const i = args.indexOf(nom); return i !== -1 ? ar
 
 const DEPART = opt("--depart", null);
 const PAR_SEMAINE = Number(opt("--par-semaine", 3));
-const SORTIE = opt("--sortie", "publication.csv");
+const TAMPERMONKEY = args.includes("--tampermonkey");
+const SORTIE = opt("--sortie", TAMPERMONKEY ? "epingles-tampermonkey.csv" : "publication.csv");
 const MEDIA_BASE = process.env.MEDIA_BASE ?? "https://www.aquametre.fr/pins";
 const TABLEAU = process.env.TABLEAU_PINTEREST ?? "Aquariophilie";
 
@@ -51,15 +57,31 @@ function dates(n) {
 const motsCles = (e) => [...e.description.matchAll(/#(\S+)/g)].map((m) => m[1]).join(", ");
 const q = (v) => `"${String(v).replace(/"/g, '""')}"`;
 
+const image = (e, i) => `${MEDIA_BASE}/${String(i + 1).padStart(2, "0")}-${e.id}.jpg`;
+const sansMotsCles = (e) => e.description.replace(/\s*#\S+/g, "").trim();
+// Texte alternatif : ce qu'on lit sur l'image.
+const alt = (e) => [e.punch, e.sub].filter(Boolean).map((t) => /[.!?…]$/.test(t) ? t : `${t}.`).join(" ");
+
+if (TAMPERMONKEY) {
+  const lignes = [
+    ["Titre", "Description", "Lien", "Image URL", "Tableau", "Alt Text"].join(","),
+    ...EPINGLES.map((e, i) => [e.titre, sansMotsCles(e), e.vers, image(e, i), TABLEAU, alt(e)].map(q).join(",")),
+  ];
+  writeFileSync(SORTIE, "\ufeff" + lignes.join("\r\n") + "\r\n", "utf8");
+  console.log(`${EPINGLES.length} épingles écrites dans ${SORTIE}, pour le tableau « ${TABLEAU} ».`);
+  console.log(`À charger dans le panneau Auto-Pin sur pinterest.com (10 par jour au plus).`);
+  process.exit(0);
+}
+
 const quand = dates(EPINGLES.length);
 const lignes = [
   ["Title", "Media URL", "Pinterest board", "Thumbnail", "Description", "Link", "Publish date", "Keywords"].join(","),
   ...EPINGLES.map((e, i) => [
     e.titre,
-    `${MEDIA_BASE}/${String(i + 1).padStart(2, "0")}-${e.id}.jpg`,
+    image(e, i),
     TABLEAU,
     "",
-    e.description.replace(/\s*#\S+/g, "").trim(),
+    sansMotsCles(e),
     e.vers,
     quand[i],
     motsCles(e),

@@ -8,6 +8,7 @@
     "start": "next start",
     "epingles": "node scripts/rendre-epingles.mjs",
     "epingles:csv": "node scripts/planifier-epingles.mjs",
+    "epingles:tampermonkey": "node scripts/planifier-epingles.mjs --tampermonkey",
     "epingles:mesure": "node scripts/mesurer-epingles.mjs"
   },
   "dependencies": {
