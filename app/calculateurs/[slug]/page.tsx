@@ -9,6 +9,7 @@ import { SchemaOutil } from "@/components/Schema";
 import { Methode, Faq } from "@/components/Contenu";
 import { chargerVisuels } from "@/lib/catalogue";
 import { GUIDES } from "@/lib/guides";
+import Epingler from "@/components/Epingler";
 
 export function generateStaticParams() {
   return OUTILS.map((o) => ({ slug: o.slug }));
@@ -60,6 +61,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
         <Methode paragraphes={c.methode} titre={`Comment se calcule ${o.nom.toLowerCase()}`} />
         <Faq questions={c.faq} />
+
+        <Epingler chemin={`/calculateurs/${o.slug}`} />
 
         <section className="voisins">
           <h2>Dans la même famille</h2>

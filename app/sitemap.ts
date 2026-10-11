@@ -2,8 +2,16 @@ import type { MetadataRoute } from "next";
 import { OUTILS } from "@/lib/outils";
 import { SITE } from "@/lib/site";
 import { GUIDES } from "@/lib/guides";
+import { epinglesDe } from "@/components/Epingler";
 
 const BASE = SITE.url;
+
+/** Visuels des épingles de la page, affichés en bas de celle-ci : Google Images
+ *  peut ainsi les proposer, avec un lien vers la page. */
+const images = (chemin: string) => {
+  const liste = epinglesDe(chemin).map((p) => p.image);
+  return liste.length ? { images: liste } : {};
+};
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // La date la plus récente parmi les contenus sert pour les pages d'index.
@@ -14,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...OUTILS.map((o) => ({
       url: `${BASE}/calculateurs/${o.slug}`,
       lastModified: o.maj,
+      ...images(`/calculateurs/${o.slug}`),
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
@@ -21,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...GUIDES.map((g) => ({
       url: `${BASE}/guides/${g.slug}`,
       lastModified: g.maj,
+      ...images(`/guides/${g.slug}`),
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),

@@ -6,6 +6,7 @@ import { calcFiltration } from "@/lib/aqua";
 import { Achat } from "@/components/ui";
 import { Faq } from "@/components/Contenu";
 import { SchemaGuide } from "@/components/Schema";
+import Epingler from "@/components/Epingler";
 
 const g = GUIDES.find((x) => x.slug === "quel-filtre-aquarium")!;
 
@@ -199,6 +200,8 @@ export default function Page() {
         </section>
 
         <Faq questions={FAQ} />
+
+        <Epingler chemin={`/guides/${g.slug}`} />
 
         <section className="prose">
           <h2>Pour aller plus loin</h2>
