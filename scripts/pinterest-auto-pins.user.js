@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pinterest - Publication automatique de pins
 // @namespace    baddane.tools
-// @version      1.2
+// @version      1.3
 // @require      https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
 // @description  Publie des pins automatiquement depuis un fichier Excel (max 10/jour), avec délais aléatoires pour éviter le bannissement.
 // @match        https://www.pinterest.com/*
@@ -520,9 +520,10 @@ LIMITES DE SÉCURITÉ :
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
       const rest = Math.max(0, fin - Date.now());
-      const min = Math.floor(rest / 60000);
+      const h = Math.floor(rest / 3600000);
+      const min = Math.floor((rest % 3600000) / 60000);
       const sec = Math.floor((rest % 60000) / 1000);
-      $('pin-ap-countdown').textContent = `${min}:${String(sec).padStart(2, '0')}`;
+      $('pin-ap-countdown').textContent = h ? `${h} h ${String(min).padStart(2, '0')}` : `${min}:${String(sec).padStart(2, '0')}`;
       if (rest <= 0) { clearInterval(timerInterval); $('pin-ap-timer').style.display = 'none'; }
     }, 1000);
   }
@@ -555,9 +556,14 @@ LIMITES DE SÉCURITÉ :
       // page. Avant, recharger relançait le pin suivant au bout de 2 s.
       const attente = (s.prochainA || 0) - Date.now();
       if (attente > 0) {
-        log(`⏳ Prochain pin (${s.i + 1}/${s.pins.length}) dans ~${Math.ceil(attente / 60000)} min (délai anti-spam)…`);
+        const quand = attente > 60 * 60 * 1000
+          ? `${new Date(s.prochainA).toDateString() === new Date().toDateString() ? 'aujourd\'hui' : 'demain'} à ${new Date(s.prochainA).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}. Laissez l'onglet ouvert et le PC allumé, sans mise en veille`
+          : `dans ~${Math.ceil(attente / 60000)} min (délai anti-spam)`;
+        log(`⏳ Prochain pin (${s.i + 1}/${s.pins.length}) ${quand}…`);
         startCountdown(attente);
-        await sleep(attente);
+        // Attente par tranches d'une minute, contrôlée sur l'horloge : un long
+        // setTimeout dérive si l'onglet est mis en sommeil ou le PC en veille.
+        while (Date.now() < s.prochainA && charger()?.enCours) await sleep(Math.min(60000, s.prochainA - Date.now()));
         $('pin-ap-timer').style.display = 'none';
         if (!charger()?.enCours) break;
       }
@@ -565,11 +571,16 @@ LIMITES DE SÉCURITÉ :
       // Vérifier le quota
       const q = getQuota();
       if (q.count >= MAX_PAR_JOUR) {
-        s.enCours = false; s.onglet = null; sauver(s);
-        $('pin-ap-timer').style.display = 'none';
-        log(`📊 Limite de ${MAX_PAR_JOUR} pins atteinte pour aujourd'hui.\n${s.pins.length - s.i} pin(s) restant(s) à publier demain.\n\nDemain, ouvrez Pinterest et cliquez « Reprendre » — la file repart où elle s'est arrêtée.`);
-        majQuotaUI(); majBoutons();
-        return;
+        // Quota atteint : la file reste active et repart d'elle-même le
+        // lendemain, à une heure tirée au hasard entre 9 h et 11 h, si l'onglet
+        // est resté ouvert. Avant, il fallait revenir cliquer « Reprendre ».
+        const demain = new Date(); demain.setDate(demain.getDate() + 1);
+        demain.setHours(9, rand(0, 119), rand(0, 59), 0);
+        s.prochainA = demain.getTime();
+        enregistrer(s);
+        majQuotaUI();
+        log(`📊 Limite de ${MAX_PAR_JOUR} pins atteinte pour aujourd'hui.\n${s.pins.length - s.i} pin(s) restant(s).`);
+        continue;
       }
 
       const p = s.pins[s.i];
