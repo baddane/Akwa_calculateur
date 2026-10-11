@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pinterest - Publication automatique de pins
 // @namespace    baddane.tools
-// @version      1.6
+// @version      1.7
 // @require      https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
 // @description  Publie les pins d'aquametre.fr (ou d'un fichier Excel) automatiquement (max 5/jour, étalés de 9 h à 21 h), avec délais aléatoires pour éviter le bannissement.
 // @match        https://www.pinterest.com/*
@@ -477,11 +477,17 @@ LIMITES DE SÉCURITÉ :
   // ---------- Tableaux Pinterest ----------
   // Associe à chaque pin l'identifiant de son tableau ; renvoie les noms
   // introuvables et la liste des tableaux disponibles pour les afficher.
+  // Nom de tableau comparable : Pinterest remplace l'apostrophe droite par
+  // l'apostrophe typographique (« Poissons d’aquarium »), et un espace en trop
+  // ou une majuscule suffisaient à rendre le tableau introuvable.
+  const nomTableau = n => String(n || '').normalize('NFC').replace(/[\u2018\u2019\u02BC`´]/g, "'")
+    .replace(/[\u00A0\u202F]/g, ' ').replace(/\s+/g, ' ').replace(/\s*:\s*/g, ' : ').trim().toLowerCase();
+
   async function resoudreTableaux(pins) {
     boards = await getBoards();
     const introuvables = [];
     pins.forEach((p, i) => {
-      const found = boards.find(b => b.name.toLowerCase().trim() === p.tableau.toLowerCase().trim());
+      const found = boards.find(b => nomTableau(b.name) === nomTableau(p.tableau));
       if (found) { p.boardId = found.id; p.boardName = found.name; }
       else introuvables.push(`Ligne ${i + 1} : tableau « ${p.tableau} » introuvable`);
     });
