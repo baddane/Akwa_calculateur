@@ -1,5 +1,7 @@
 "use client";
 
+import { amz } from "@/lib/amazon";
+
 export function Champ({ id, label, valeur, onChange, hint, min = 0, step }: {
   id: string; label: string; valeur: number; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   hint?: string; min?: number; step?: number;
@@ -33,6 +35,5 @@ export function Jauge({ part, ton }: { part: number; ton: "ok" | "warn" | "dange
 }
 
 export function Achat({ q, children }: { q: string; children: React.ReactNode }) {
-  const url = `https://www.amazon.fr/s?k=${encodeURIComponent(q)}&tag=baddane0a-21`;
-  return <a className="btn" href={url} target="_blank" rel="sponsored nofollow noopener">{children}</a>;
+  return <a className="btn" href={amz(q)} target="_blank" rel="sponsored nofollow noopener">{children}</a>;
 }

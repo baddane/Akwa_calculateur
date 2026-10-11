@@ -171,7 +171,10 @@ export function Verre() {
         <p style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
           {r.verdict === "Insuffisant"
             ? <Achat q={`aquarium ${bac.longueur} cm equipe`}>Voir des bacs neufs de {bac.longueur} cm</Achat>
-            : <Link className="btn btn-sec" href="/calculateurs/poids">Vérifier le poids en charge</Link>}
+            : <>
+                <Link className="btn btn-sec" href="/calculateurs/poids">Vérifier le poids en charge</Link>
+                <Link className="btn btn-sec" href="/calculateurs/kit">Le matériel pour ce bac</Link>
+              </>}
         </p>
       </div>
     </div>

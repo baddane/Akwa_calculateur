@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { ESPECES, calcVolume, calcPopulation, type Stock } from "@/lib/aqua";
 import { useTank } from "../useTank";
 import { Champ, Stat, Verdict, Jauge, Achat } from "../ui";
@@ -71,7 +72,10 @@ export function Population() {
         {pop.alertes.length > 0 && (
           <ul className="alerts">{pop.alertes.map((a, i) => <li key={i}>{a}</li>)}</ul>
         )}
-        <p style={{ marginTop: 14 }}><Achat q="test aquarium gouttes no2 no3">Voir les tests en gouttes</Achat></p>
+        <p style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <Achat q="test aquarium gouttes no2 no3">Voir les tests en gouttes</Achat>
+          <Link className="btn btn-sec" href="/calculateurs/kit">Le matériel pour {vol.net} L</Link>
+        </p>
       </div>
     </div>
   );

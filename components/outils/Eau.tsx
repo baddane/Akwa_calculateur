@@ -44,6 +44,7 @@ export function ChangementEau() {
           avant que l&apos;eau n&apos;atteigne les branchies.
         </p>
         <p style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <Achat q="test nitrates aquarium gouttes no3">Voir les tests de nitrates</Achat>
           <Achat q="aspirateur a vase aquarium siphon">Voir les aspirateurs à vase</Achat>
           <Achat q="conditionneur eau aquarium anti chlore">Voir les conditionneurs</Achat>
           {!r.possible && <Achat q="osmoseur aquarium eau osmosee">Voir les osmoseurs</Achat>}
@@ -84,7 +85,10 @@ export function EauOsmosee() {
           1 °dGH en vaut 17,8. Vos {ghF} °f de robinet font donc {robinetDGH.toFixed(1)} °dGH, et c&apos;est ce
           second chiffre que liront vos tests. Beaucoup de bacs à crevettes échouent sur cette confusion.
         </p>
-        <p style={{ marginTop: 14 }}><Achat q="osmoseur aquarium 190 l/j">Voir les osmoseurs</Achat></p>
+        <p style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <Achat q="osmoseur aquarium 190 l/j">Voir les osmoseurs</Achat>
+          <Achat q="test gh kh aquarium gouttes">Voir les tests GH et KH</Achat>
+        </p>
       </div>
     </div>
   );
