@@ -25,9 +25,11 @@ export const metadata: Metadata = {
   openGraph: { locale: "fr_FR", type: "website", siteName: SITE.nom },
   // La vérification par DNS couvre le domaine entier et vaut mieux ; cette
   // balise n'est là que pour qui préfère la méthode HTML.
-  verification: process.env.GOOGLE_SITE_VERIFICATION
-    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
-    : undefined,
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : {}),
+    // Pinterest > Paramètres > Revendiquer : la valeur de la balise p:domain_verify.
+    ...(process.env.PINTEREST_DOMAIN_VERIFY ? { other: { "p:domain_verify": process.env.PINTEREST_DOMAIN_VERIFY } } : {}),
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

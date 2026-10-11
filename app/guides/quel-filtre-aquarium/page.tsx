@@ -13,7 +13,10 @@ export const metadata: Metadata = {
   title: g.titre,
   description: g.description,
   alternates: { canonical: `/guides/${g.slug}` },
-  openGraph: { title: g.titre, description: g.description, type: "article" },
+  openGraph: {
+    title: g.titre, description: g.description, type: "article", siteName: SITE.nom, locale: "fr_FR",
+    images: [{ url: g.image, width: 1000, height: 1500, alt: g.titre }],
+  },
 };
 
 /** Volumes commerciaux courants et leur volume net approximatif : un bac perd

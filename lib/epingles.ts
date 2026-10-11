@@ -17,6 +17,30 @@ export type Epingle = {
   description: string;    // description Pinterest, riche en mots-clés
   /** Publiée avant les autres si plus élevée (0 par défaut). */
   priorite?: number;
+  /** Tableau Pinterest où la publier (nom exact, voir TABLEAUX). */
+  tableau: string;
+};
+
+/** Tableaux Pinterest, un par grande question. Pinterest classe un pin d'après
+ *  son tableau autant que d'après son texte : un tableau unique « Aquariophilie »
+ *  ne dit rien de précis, des noms qui reprennent les recherches réelles
+ *  aident chaque pin à sortir sur la bonne requête. Les noms doivent exister
+ *  tels quels sur le compte Pinterest. */
+export const TABLEAUX = {
+  debutant: "Aquarium débutant",
+  materiel: "Matériel aquarium : filtre et chauffage",
+  poissons: "Poissons d'aquarium",
+  eau: "Eau d'aquarium : dureté et nitrates",
+  plante: "Aquarium planté",
+} as const;
+
+/** Description à coller dans chaque tableau, sur Pinterest. */
+export const DESCRIPTIONS_TABLEAUX: Record<keyof typeof TABLEAUX, string> = {
+  debutant: "Démarrer un aquarium d'eau douce sans erreur : volume réel, poids, meuble, matériel de départ et cycle de l'azote avant les premiers poissons. Calculateurs gratuits sur aquametre.fr.",
+  materiel: "Choisir le filtre et le chauffage de son aquarium : débit à lire sur la boîte, puissance en watts selon le volume et la pièce, types de filtres et erreurs à éviter.",
+  poissons: "Combien de poissons dans un aquarium, quels effectifs de banc, quelles espèces compatibles en température. Néons, corydoras, guppys : peupler son bac sans le surcharger.",
+  eau: "Dureté de l'eau, eau osmosée, nitrates et changements d'eau : comprendre et régler les paramètres de son aquarium, crevettes comprises.",
+  plante: "Aquarium planté et aquascaping : éclairage en lumens, durée d'éclairage, filtration douce et matériel pour des plantes qui poussent sans algues.",
 };
 
 const U = "https://www.aquametre.fr";
@@ -27,6 +51,7 @@ export const EPINGLES: Epingle[] = [
     big: "−28 %", sub: "Rebord, substrat, décor : c'est le volume net qui compte.",
     fond: "plante-clair",
     vers: `${U}/calculateurs/volume`,
+    tableau: TABLEAUX.debutant,
     titre: "Calculer le volume réel de son aquarium en litres",
     description: "Calcul du volume réel d'un aquarium en litres : le volume affiché par le fabricant est celui d'une boîte vide. Une fois l'eau sous le rebord, le substrat et le décor en place, il manque souvent jusqu'à un quart. Entrez vos dimensions et obtenez le volume net, celui qui sert à choisir la population, le filtre et le chauffage. Gratuit, sans inscription, avec le matériel adapté à votre bac. #aquariophilie #aquarium #aquascaping" },
 
@@ -35,6 +60,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Trois dimensions, un résultat. Sans inscription.",
     fond: "bac-bureau",
     vers: `${U}/calculateurs/volume`,
+    tableau: TABLEAUX.debutant,
     titre: "Combien de litres fait mon aquarium ? Calcul en 30 secondes",
     description: "Combien de litres fait votre aquarium ? Entrez longueur, largeur et hauteur intérieures : le calculateur donne le volume brut, le volume net réellement rempli d'eau et la surface d'eau. Utile avant d'acheter un bac ou de doser un traitement. Gratuit, sans inscription, avec des bacs équipés de la bonne taille. #aquarium #aquariophilie #débutant" },
 
@@ -43,6 +69,7 @@ export const EPINGLES: Epingle[] = [
     big: "380 kg", sub: "Sur moins d'un demi-mètre carré de plancher.",
     fond: "plante-racine",
     vers: `${U}/calculateurs/poids`,
+    tableau: TABLEAUX.debutant,
     titre: "Combien pèse un aquarium rempli ? Calcul du poids en charge",
     description: "Poids d'un aquarium rempli : verre, eau, substrat et décor additionnés, un bac de 120 cm approche les 380 kg, sur moins d'un demi-mètre carré. Calculez le poids total et la charge au mètre carré avant de le poser sur un meuble ou un plancher ancien. Calcul gratuit, avec les meubles d'aquarium à la bonne longueur. #aquarium #aquariophilie #bricolage" },
 
@@ -51,6 +78,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Au-delà de 60 litres, un meuble de salon fléchit.",
     fond: "bac-bureau",
     vers: `${U}/calculateurs/poids`,
+    tableau: TABLEAUX.debutant,
     titre: "Quel meuble pour un aquarium ? Calculer la charge réelle",
     description: "Quel meuble pour un aquarium ? Un meuble de salon est prévu pour une charge répartie, pas pour deux cents kilos posés sur quatre pieds. Calculez le poids en charge de votre bac et la pression au sol, puis choisissez un meuble d'aquarium à la bonne longueur. Calcul gratuit en 30 secondes. #aquarium #aménagement" },
 
@@ -59,6 +87,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Elle ignore la charge réelle de chaque espèce.",
     fond: "plantes-fond",
     vers: `${U}/calculateurs/population`,
+    tableau: TABLEAUX.poissons,
     titre: "Combien de poissons dans un aquarium ? Le calcul honnête",
     description: "Combien de poissons dans un aquarium ? La règle du centimètre par litre surpeuple presque tous les bacs. Le calculateur pondère la charge réelle de chaque espèce, vérifie les effectifs de banc minimum et la température commune à votre sélection. 41 espèces référencées, résultat en direct, puis la liste du matériel pour votre volume. #aquariophilie #poissons #aquarium" },
 
@@ -67,6 +96,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Environ 10 néons et 6 corydoras. Pas davantage.",
     fond: "banc-plante",
     vers: `${U}/calculateurs/population`,
+    tableau: TABLEAUX.poissons,
     titre: "Combien de poissons dans 100 litres d'aquarium ?",
     description: "Combien de poissons dans un aquarium de 100 litres ? Tout dépend des espèces : environ 10 néons et 6 corydoras, pas davantage. Choisissez vos poissons et voyez le taux d'occupation, les alertes de compatibilité et la température commune se calculer en direct. Gratuit, sans inscription. #aquarium100l #aquariophilie #néons" },
 
@@ -77,6 +107,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Vendus au même rayon, jamais dans le même bac.",
     fond: "poisson-rouge",
     vers: `${U}/calculateurs/population`,
+    tableau: TABLEAUX.poissons,
     titre: "Compatibilité des poissons d'aquarium : la température",
     description: "Compatibilité des poissons d'aquarium : deux espèces vendues au même rayon peuvent réclamer des températures sans aucun point commun, comme le cardinal de Chine (16–22 °C) et le discus (28–31 °C). Le calculateur affiche la fenêtre thermique commune à votre sélection, avant l'achat. Gratuit, 41 espèces référencées. #aquariophilie #compatibilité #poissons" },
 
@@ -85,6 +116,7 @@ export const EPINGLES: Epingle[] = [
     big: "×6", sub: "Six corydoras minimum, dix néons. En dessous, ils dépérissent.",
     fond: "poisson-vert",
     vers: `${U}/calculateurs/population`,
+    tableau: TABLEAUX.poissons,
     titre: "Combien de néons, de corydoras ? Les effectifs de banc",
     description: "Combien de néons ou de corydoras faut-il ? Les poissons de banc maintenus à deux ou trois stressent et dépérissent : six corydoras minimum, dix néons. Le calculateur signale chaque effectif insuffisant et vérifie que votre bac a la place pour le groupe complet. Gratuit, sans inscription. #aquariophilie #néons #corydoras" },
 
@@ -93,6 +125,7 @@ export const EPINGLES: Epingle[] = [
     big: "−35 %", sub: "Une fois les mousses en place, il en reste deux tiers.",
     fond: "plantes-bleu",
     vers: `${U}/calculateurs/filtration`,
+    tableau: TABLEAUX.materiel,
     titre: "Quel débit de filtre pour un aquarium ? Le calcul corrigé",
     description: "Quel débit de filtre pour un aquarium ? Le débit imprimé sur la boîte est mesuré à vide : une fois les mousses et céramiques en place, il en reste environ deux tiers. Calculez le débit réel nécessaire selon votre volume et votre population, puis le débit constructeur à viser, avec les filtres correspondants. Gratuit. #aquariophilie #filtration #aquarium" },
 
@@ -101,6 +134,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Quatre rotations horaires du volume net.",
     fond: "plante-racine",
     vers: `${U}/calculateurs/filtration`,
+    tableau: TABLEAUX.plante,
     titre: "Quel filtre choisir pour son aquarium planté ?",
     description: "Quel filtre choisir pour un aquarium planté de 100 litres ? Visez quatre rotations horaires du volume net, puis corrigez de la perte due aux masses filtrantes : c'est ce chiffre corrigé qu'il faut lire sur l'emballage. Le calculateur le donne pour vos dimensions exactes, avec les filtres au bon débit. #aquascaping #filtration #bacplanté" },
 
@@ -109,6 +143,7 @@ export const EPINGLES: Epingle[] = [
     big: "90 lm", sub: "par décimètre carré, pour des plantes moyennes.",
     fond: "plantes-bleu",
     vers: `${U}/calculateurs/eclairage`,
+    tableau: TABLEAUX.plante,
     titre: "Combien de lumens pour un aquarium planté ?",
     description: "Combien de lumens pour un aquarium planté ? Le watt mesure la consommation, le lumen ce que reçoivent les plantes : deux rampes de même puissance éclairent parfois du simple au double. Calculez le flux nécessaire selon la surface, la hauteur d'eau et l'exigence de vos plantes, puis trouvez la rampe LED à la longueur de votre bac. #aquascaping #plantesaquarium #éclairage" },
 
@@ -117,6 +152,7 @@ export const EPINGLES: Epingle[] = [
     big: "8 h", sub: "Sur minuterie, sans rattrapage le lendemain.",
     fond: "poisson-herbe",
     vers: `${U}/calculateurs/eclairage`,
+    tableau: TABLEAUX.plante,
     titre: "Combien d'heures d'éclairage par jour en aquarium ?",
     description: "Combien d'heures d'éclairage par jour dans un aquarium ? Huit heures sur minuterie suffisent : au-delà, l'excédent de lumière profite aux algues plutôt qu'aux plantes. Vérifiez aussi que votre rampe délivre assez de lumens : le calculateur donne le flux nécessaire et la longueur de rampe adaptée à votre bac. #aquariophilie #algues #plantesaquarium" },
 
@@ -125,6 +161,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Pas le volume : l'écart à combler entre la pièce et le bac.",
     fond: "poisson-rouge",
     vers: `${U}/calculateurs/chauffage`,
+    tableau: TABLEAUX.materiel,
     titre: "Quelle puissance de chauffage pour un aquarium en watts ?",
     description: "Quelle puissance de chauffage pour un aquarium ? Pas seulement le volume : l'écart entre la pièce en hiver et la température visée. Un même bac dans une véranda et dans un salon ne demande pas la même puissance. Calculez les watts nécessaires pour votre bac et votre pièce, avec les chauffages correspondants. Gratuit. #aquariophilie #matériel" },
 
@@ -133,6 +170,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Sous-dimensionné. Il rendra l'âme en une saison.",
     fond: "poisson-vert",
     vers: `${U}/calculateurs/chauffage`,
+    tableau: TABLEAUX.materiel,
     titre: "Chauffage d'aquarium qui tourne en permanence : pourquoi",
     description: "Votre chauffage d'aquarium tourne en permanence ? Une résistance bien dimensionnée fonctionne par cycles courts. En continu, elle est trop faible pour l'écart à combler, ne tient jamais la consigne et s'use en une saison. Calculez la puissance qu'il vous faut vraiment selon votre volume et la température de la pièce. #aquariophilie #dépannage" },
 
@@ -141,6 +179,7 @@ export const EPINGLES: Epingle[] = [
     big: "30 °f", sub: "16 °dGH au robinet, 6 à 8 pour un bac à Caridina.",
     fond: "crevette",
     vers: `${U}/calculateurs/eau-osmosee`,
+    tableau: TABLEAUX.eau,
     titre: "Eau trop dure pour les crevettes : quelle proportion d'osmosée",
     description: "Eau trop dure pour des crevettes Caridina ? Une eau du robinet à 30 °f fait 16 °dGH, quand un bac à crevettes en demande 6 à 8. Calculez la proportion exacte d'eau osmosée et d'eau du robinet pour atteindre votre dureté cible, conversion °f / °dGH incluse, avec les osmoseurs et tests GH/KH adaptés. #crevettes #caridina #aquariophilie" },
 
@@ -151,6 +190,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Facteur 1,78 entre les deux unités.",
     fond: "escargot",
     vers: `${U}/calculateurs/eau-osmosee`,
+    tableau: TABLEAUX.eau,
     titre: "Convertir °f en °dGH : la dureté de l'eau en aquariophilie",
     description: "Convertir les °f en °dGH : votre commune publie la dureté de l'eau en degrés français, vos tests d'aquariophilie l'affichent en degrés allemands. Le facteur est de 1,78, et l'oublier fait croire à une eau presque deux fois plus dure. Le calculateur convertit et donne le mélange d'eau osmosée qu'il vous faut. #aquariophilie #paramètres #crevettes" },
 
@@ -159,6 +199,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Testez votre eau du robinet : elle en contient peut-être.",
     fond: "plantes-fond",
     vers: `${U}/calculateurs/changement-eau`,
+    tableau: TABLEAUX.eau,
     titre: "Nitrates qui ne baissent pas en aquarium : la cause oubliée",
     description: "Nitrates qui ne baissent pas malgré les changements d'eau ? Testez votre eau du robinet : elle en contient souvent déjà, ce qui fixe un plancher impossible à franchir. Calculez le volume d'eau à renouveler pour atteindre votre objectif, en tenant compte de votre robinet. Gratuit, avec les tests de nitrates en gouttes. #aquariophilie #nitrates #entretien" },
 
@@ -167,6 +208,7 @@ export const EPINGLES: Epingle[] = [
     sub: "La pression croît avec le carré de la hauteur d'eau.",
     fond: "plante-clair",
     vers: `${U}/calculateurs/verre`,
+    tableau: TABLEAUX.debutant,
     titre: "Épaisseur de verre nécessaire pour un aquarium",
     description: "Quelle épaisseur de verre pour un aquarium ? La pression sur les vitres croît avec le carré de la hauteur d'eau : un bac haut et court est plus sollicité qu'un bac long et bas de même volume. Vérifiez votre cuve, neuve ou d'occasion, selon sa hauteur et sa longueur. Contrôle gratuit et volontairement prudent. #aquariophilie #sécurité #bricolage" },
 
@@ -175,6 +217,7 @@ export const EPINGLES: Epingle[] = [
     items: ["Le bac et son meuble", "Filtre et chauffage", "Éclairage et substrat", "Conditionneur et bactéries", "Tests en gouttes"],
     fond: "bac-bureau",
     vers: `${U}/calculateurs/kit`,
+    tableau: TABLEAUX.debutant,
     titre: "Liste de matériel pour démarrer un aquarium d'eau douce",
     description: "Liste de matériel pour démarrer un aquarium d'eau douce, calculée sur vos dimensions : débit du filtre, puissance du chauffage, longueur de la rampe LED, kilos de substrat, conditionneur, bactéries et tests. Chaque ligne indique la spécification à viser et renvoie vers les modèles correspondants. À faire avant le premier achat. #aquariophilie #débutant #matériel" },
 
@@ -183,6 +226,7 @@ export const EPINGLES: Epingle[] = [
     big: "NO₂ = 0", sub: "Le temps que les bactéries s'installent. Pas avant.",
     fond: "poisson-herbe",
     vers: `${U}/calculateurs/kit`,
+    tableau: TABLEAUX.debutant,
     titre: "Cycle de l'azote : combien de temps avant les premiers poissons",
     description: "Cycle de l'azote : comptez trois à six semaines avant d'introduire les premiers poissons, le temps que les bactéries s'installent. Tant que le test de nitrites n'est pas revenu à zéro, aucune introduction. Retrouvez la liste du matériel de démarrage, bactéries et tests en gouttes compris, calculée pour votre bac. #aquariophilie #cycledelazote #débutant" },
 
@@ -193,6 +237,7 @@ export const EPINGLES: Epingle[] = [
     items: ["Nano : éponge sur bulleur", "60 L : interne ou cascade", "100 L : interne puissant ou externe", "150 L et plus : externe"],
     fond: "plantes-bleu",
     vers: `${U}/guides/quel-filtre-aquarium`,
+    tableau: TABLEAUX.materiel,
     titre: "Quel filtre choisir pour son aquarium selon le volume",
     description: "Quel filtre pour un aquarium ? Interne, externe, cascade ou éponge : le bon type dépend du volume du bac et de ses habitants. Le guide donne pour chaque taille, du nano au 300 litres, le débit à lire sur la boîte, les critères qui comptent après le débit et les erreurs qui font acheter trop petit. #aquariophilie #filtration #aquarium" },
 
@@ -203,6 +248,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Silence, place dans le bac, entretien : ce qui départage.",
     fond: "plante-racine",
     vers: `${U}/guides/quel-filtre-aquarium`,
+    tableau: TABLEAUX.materiel,
     titre: "Filtre interne ou externe pour un aquarium : lequel choisir ?",
     description: "Filtre interne ou externe ? En dessous de 100 litres, un bon filtre interne suffit. Au-delà, ou pour un bac planté, le filtre externe l'emporte : plus de masse filtrante, moins de bruit, rien dans le bac. Le guide compare aussi les filtres à cascade et à éponge, avec le débit à viser pour chaque taille de bac. #aquariophilie #filtration #aquascaping" },
 
@@ -211,6 +257,7 @@ export const EPINGLES: Epingle[] = [
     big: "500 L/h", sub: "Pour 4 brassages réels par heure, une fois le filtre garni.",
     fond: "poisson-herbe",
     vers: `${U}/guides/quel-filtre-aquarium`,
+    tableau: TABLEAUX.materiel,
     titre: "Quel débit de filtre pour un aquarium de 100 litres ?",
     description: "Quel débit de filtre pour un aquarium de 100 litres ? Le bac contient environ 80 litres d'eau une fois installé. Pour quatre brassages réels par heure, visez un filtre annoncé autour de 500 L/h, car le débit du carton est mesuré à vide. Le guide donne le chiffre pour chaque taille de bac, du nano au 300 litres. #aquarium100l #filtration #aquariophilie" },
 
@@ -219,6 +266,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Jamais. Les bactéries du filtre meurent en quelques heures sans courant.",
     fond: "banc-plante",
     vers: `${U}/guides/quel-filtre-aquarium`,
+    tableau: TABLEAUX.materiel,
     titre: "Peut-on éteindre le filtre de son aquarium la nuit ?",
     description: "Peut-on éteindre le filtre d'un aquarium la nuit pour le bruit ? Non : les bactéries qui transforment les déchets des poissons vivent dans les masses filtrantes et ont besoin d'un courant oxygéné en continu. Le guide explique comment choisir un filtre silencieux et l'entretenir sans détruire sa colonie. #aquariophilie #entretien #débutant" },
 
@@ -229,6 +277,7 @@ export const EPINGLES: Epingle[] = [
     items: ["60 L : 50 W", "100 L : 75 W", "150 à 200 L : 150 W", "300 L : 300 W, ou deux chauffages"],
     fond: "poisson-rouge",
     vers: `${U}/guides/quel-chauffage-aquarium`,
+    tableau: TABLEAUX.materiel,
     titre: "Quelle puissance de chauffage pour son aquarium selon le volume",
     description: "Quelle puissance de chauffage pour un aquarium ? Comptez environ 0,15 watt par litre et par degré d'écart entre la pièce et l'eau, puis prenez le palier du commerce juste au-dessus. Le guide donne la puissance pour chaque taille de bac, du nano au 300 litres, selon la température de votre pièce en hiver. #aquariophilie #chauffage #aquarium" },
 
@@ -239,6 +288,7 @@ export const EPINGLES: Epingle[] = [
     sub: "C'est l'écart entre la pièce et l'eau qui fixe la puissance.",
     fond: "escargot",
     vers: `${U}/guides/quel-chauffage-aquarium`,
+    tableau: TABLEAUX.materiel,
     titre: "Chauffage d'aquarium : pourquoi la pièce compte plus que le volume",
     description: "Un même aquarium de 100 litres demande 50 W dans un salon à 21 °C et 150 W dans une pièce qui descend à 16 °C. Le chauffage compense la perte de chaleur, qui dépend de l'écart entre l'air et l'eau. Le guide donne la puissance selon votre bac et votre pièce, et les erreurs qui usent un chauffage en une saison. #aquariophilie #chauffage #débutant" },
 
@@ -247,6 +297,7 @@ export const EPINGLES: Epingle[] = [
     big: "20 min", sub: "Débranchez, laissez refroidir dans l'eau, puis retirez-le. Le verre chaud éclate à l'air.",
     fond: "plante-clair",
     vers: `${U}/guides/quel-chauffage-aquarium`,
+    tableau: TABLEAUX.materiel,
     titre: "Chauffage d'aquarium : comment le sortir sans le casser",
     description: "Un chauffage d'aquarium sorti de l'eau encore chaud peut éclater. Débranchez-le, laissez-le refroidir une vingtaine de minutes dans l'eau, puis retirez-le ; faites l'inverse pour l'installer. Le guide détaille le choix de la puissance, le placement et les sécurités à exiger à l'achat. #aquariophilie #entretien #sécurité" },
 
@@ -255,6 +306,7 @@ export const EPINGLES: Epingle[] = [
     sub: "Oui. Le thermostat dérive avec les années : c'est la panne la plus fréquente.",
     fond: "crevette",
     vers: `${U}/guides/quel-chauffage-aquarium`,
+    tableau: TABLEAUX.materiel,
     titre: "Faut-il un thermomètre en plus du chauffage d'aquarium ?",
     description: "Faut-il un thermomètre si le chauffage a un thermostat ? Oui : le cadran indique une consigne, pas une mesure, et le thermostat dérive avec les années jusqu'à rester bloqué allumé. Seul un thermomètre indépendant révèle la panne avant qu'elle ne cuise le bac. Le guide explique comment choisir et placer son chauffage. #aquariophilie #matériel #crevettes" },
 ];

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pinterest - Publication automatique de pins
 // @namespace    baddane.tools
-// @version      1.5
+// @version      1.6
 // @require      https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
 // @description  Publie les pins d'aquametre.fr (ou d'un fichier Excel) automatiquement (max 5/jour, étalés de 9 h à 21 h), avec délais aléatoires pour éviter le bannissement.
 // @match        https://www.pinterest.com/*
@@ -431,6 +431,10 @@ LIMITES DE SÉCURITÉ :
   let boards = null;
   // Clé d'un pin : sert à ne pas republier ce que le journal marque déjà OK.
   const cle = p => `${p.imageUrl}|${(p.boardName || p.tableau || '').toLowerCase()}`;
+  // Un pin est reconnu à son image seule : quand une épingle change de
+  // tableau, celle déjà publiée dans l'ancien ne doit pas repartir.
+  const imageDe = c => String(c || '').split('|')[0];
+  const imagesPubliees = () => new Set(chargerJournal().filter(j => j.statut === 'OK').map(j => imageDe(j.cle)));
 
   function majBoutons() {
     const s = charger();
@@ -492,10 +496,13 @@ LIMITES DE SÉCURITÉ :
       titre: String(e.titre || '').slice(0, 100), description: String(e.description || '').slice(0, 500),
       lien: e.lien || '', imageUrl: e.image, tableau: e.tableau, altText: e.alt || ''
     })).filter(p => p.titre && /^https?:\/\//.test(p.imageUrl || '') && p.tableau);
-    const { introuvables, noms } = await resoudreTableaux(pins);
-    if (introuvables.length) throw new Error('Tableaux introuvables :\n' + [...new Set(introuvables.map(x => x.replace(/^Ligne \d+ : /, '')))].join('\n') + '\n\nTableaux disponibles :\n' + noms);
-    const publies = new Set(chargerJournal().filter(j => j.statut === 'OK').map(j => j.cle));
-    return { total: pins.length, aPublier: pins.filter(p => !publies.has(cle(p))) };
+    const { noms } = await resoudreTableaux(pins);
+    const publies = imagesPubliees();
+    const restants = pins.filter(p => !publies.has(p.imageUrl));
+    // Tableau pas encore créé sur Pinterest : ses pins attendent, les autres
+    // partent. Ils entreront dans la file à la synchronisation qui suit sa création.
+    const manquants = [...new Set(restants.filter(p => !p.boardId).map(p => p.tableau))];
+    return { total: pins.length, aPublier: restants.filter(p => p.boardId), manquants, noms };
   }
 
   function demarrerSite() {
@@ -521,9 +528,10 @@ LIMITES DE SÉCURITÉ :
     $('pin-ap-sync').disabled = true;
     log('Lecture du site…');
     try {
-      const { total, aPublier } = await epinglesDuSite();
+      const { total, aPublier, manquants, noms } = await epinglesDuSite();
       const s = charger();
-      log(`🔄 aquametre.fr : ${total} épingle(s), dont ${aPublier.length} pas encore publiée(s).\n` +
+      log(`🔄 aquametre.fr : ${total} épingle(s), dont ${aPublier.length} prête(s) à publier.\n` +
+        (manquants.length ? `⚠️ Tableaux à créer sur Pinterest (leurs pins attendent) :\n${manquants.map(t => `  • ${t}`).join('\n')}\nTableaux existants :\n${noms}\n\n` : '') +
         aPublier.slice(0, 6).map(p => `• ${p.titre.slice(0, 45)}`).join('\n') + (aPublier.length > 6 ? `\n… et ${aPublier.length - 6} autres` : '') +
         (s && s.enCours ? '\n\nLa file sera mise à jour avant le prochain pin.' : (synchroActive() ? '' : '\n\nCochez « Synchroniser avec aquametre.fr » pour les publier.')));
       if (s && s.enCours && s.source === 'site') { s.synchro = 0; sauver(s); }
@@ -663,7 +671,8 @@ LIMITES DE SÉCURITÉ :
     const quand = attente > 60 * 60 * 1000
       ? `${new Date(s.prochainA).toDateString() === new Date().toDateString() ? 'aujourd\'hui' : 'demain'} à ${new Date(s.prochainA).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}. Laissez l'onglet ouvert et le PC allumé, sans mise en veille`
       : `dans ~${Math.ceil(attente / 60000)} min${raison ? ` (${raison})` : ''}`;
-    log(`⏳ ${quoi} ${quand}…`);
+    const manq = charger()?.manquants || [];
+    log(`⏳ ${quoi} ${quand}…` + (manq.length ? `\n\n⚠️ Tableaux à créer sur Pinterest (leurs pins attendent) :\n${manq.map(t => `  • ${t}`).join('\n')}` : ''));
     startCountdown(attente);
     // Attente par tranches d'une minute, contrôlée sur l'horloge : un long
     // setTimeout dérive si l'onglet est mis en sommeil ou le PC en veille.
@@ -694,8 +703,8 @@ LIMITES DE SÉCURITÉ :
       if (duSite() && Date.now() - (s.synchro || 0) > RESYNC) {
         try {
           log('🔄 Lecture des épingles d\'aquametre.fr…');
-          const { total, aPublier } = await epinglesDuSite();
-          s.pins = aPublier; s.i = 0; s.synchro = Date.now();
+          const { total, aPublier, manquants } = await epinglesDuSite();
+          s.pins = aPublier; s.i = 0; s.synchro = Date.now(); s.manquants = manquants;
           enregistrer(s);
           log(`🔄 aquametre.fr : ${total} épingle(s), ${aPublier.length} à publier.`);
         } catch (err) {
@@ -717,7 +726,8 @@ LIMITES DE SÉCURITÉ :
         if (!duSite()) break; // fichier : terminé
         s.prochainA = Math.max(s.prochainA || 0, s.synchro + RESYNC);
         enregistrer(s);
-        if (!(await attendre(s, `✅ Tout est publié (${s.pins.length ? s.pins.length + ' traités' : 'rien de nouveau'}). Prochaine vérification du site`, ''))) break;
+        const enAttente = (s.manquants || []).length;
+        if (!(await attendre(s, `${enAttente ? '⏸ Plus rien à publier tant que les tableaux ci-dessous manquent' : '✅ Tout est publié'}. Prochaine vérification du site`, ''))) break;
         continue;
       }
 
@@ -742,7 +752,7 @@ LIMITES DE SÉCURITÉ :
       const p = s.pins[s.i];
 
       // Déjà publié (relance d'un même fichier) : on saute sans consommer de quota.
-      if (chargerJournal().some(j => j.statut === 'OK' && j.cle === cle(p))) {
+      if (imagesPubliees().has(p.imageUrl)) {
         log(`↷ Pin ${s.i + 1} déjà publié d'après le journal, ignoré.`);
         s.i++; enregistrer(s);
         continue;

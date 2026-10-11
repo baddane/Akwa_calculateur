@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: o.titre,
     description: o.description,
     alternates: { canonical: `/calculateurs/${o.slug}` },
-    openGraph: { title: o.titre, description: o.description, type: "article" },
+    openGraph: { title: o.titre, description: o.description, type: "article", siteName: SITE.nom, locale: "fr_FR" },
   };
 }
 

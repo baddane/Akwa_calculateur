@@ -7,6 +7,7 @@ export type Guide = {
   titre: string;        // balise title
   description: string;  // méta description
   outil: string;        // calculateur associé
+  image: string;        // visuel de partage (Pinterest, réseaux), une de ses épingles
   maj: string;
 };
 
@@ -17,6 +18,7 @@ export const GUIDES: Guide[] = [
     titre: "Quel filtre pour un aquarium ? Guide selon le volume",
     description: "Interne, externe, cascade ou éponge : quel filtre choisir selon le volume de votre aquarium, quel débit lire sur la boîte, et les erreurs qui font acheter trop petit.",
     outil: "filtration",
+    image: "/pins/21-guide-filtre-liste.jpg",
     maj: "2026-10-11",
   },
   {
@@ -25,6 +27,7 @@ export const GUIDES: Guide[] = [
     titre: "Quelle puissance de chauffage pour un aquarium ? Guide d'achat",
     description: "Combien de watts pour votre aquarium selon son volume et la température de la pièce, quel type de chauffage choisir, où le placer et les erreurs qui le font lâcher en une saison.",
     outil: "chauffage",
+    image: "/pins/25-guide-chauffage-liste.jpg",
     maj: "2026-10-11",
   },
 ];

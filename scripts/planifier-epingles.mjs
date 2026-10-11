@@ -28,6 +28,8 @@ const PAR_SEMAINE = Number(opt("--par-semaine", 3));
 const TAMPERMONKEY = args.includes("--tampermonkey");
 const SORTIE = opt("--sortie", TAMPERMONKEY ? "epingles-tampermonkey.csv" : "publication.csv");
 const MEDIA_BASE = process.env.MEDIA_BASE ?? "https://www.aquametre.fr/pins";
+// Chaque épingle porte son tableau (lib/epingles.ts) ; TABLEAU_PINTEREST force
+// un tableau unique pour toutes.
 const TABLEAU = process.env.TABLEAU_PINTEREST ?? "Aquariophilie";
 
 // On importe le fichier source directement : Node 22 retire les annotations de
@@ -64,10 +66,10 @@ if (TAMPERMONKEY) {
   // Même contenu et même ordre que le flux /epingles.json.
   const lignes = [
     ["Titre", "Description", "Lien", "Image URL", "Tableau", "Alt Text"].join(","),
-    ...publications(EPINGLES, MEDIA_BASE, TABLEAU).map((p) => [p.titre, p.description, p.lien, p.image, p.tableau, p.alt].map(q).join(",")),
+    ...publications(process.env.TABLEAU_PINTEREST ? EPINGLES.map((e) => ({ ...e, tableau: TABLEAU })) : EPINGLES, MEDIA_BASE, TABLEAU).map((p) => [p.titre, p.description, p.lien, p.image, p.tableau, p.alt].map(q).join(",")),
   ];
   writeFileSync(SORTIE, "\ufeff" + lignes.join("\r\n") + "\r\n", "utf8");
-  console.log(`${EPINGLES.length} épingles écrites dans ${SORTIE}, pour le tableau « ${TABLEAU} ».`);
+  console.log(`${EPINGLES.length} épingles écrites dans ${SORTIE}.`);
   console.log(`À charger dans le panneau Auto-Pin sur pinterest.com (5 par jour, étalés de 9 h à 21 h).`);
   process.exit(0);
 }
@@ -78,7 +80,7 @@ const lignes = [
   ...EPINGLES.map((e, i) => [
     e.titre,
     image(e, i),
-    TABLEAU,
+    process.env.TABLEAU_PINTEREST ?? e.tableau ?? TABLEAU,
     "",
     sansMotsCles(e),
     e.vers,
