@@ -183,6 +183,42 @@ export const EPINGLES: Epingle[] = [
     vers: `${U}/calculateurs/kit`,
     titre: "Cycle de l'azote : combien de temps avant les premiers poissons",
     description: "Cycle de l'azote : comptez trois à six semaines avant d'introduire les premiers poissons, le temps que les bactéries s'installent. Tant que le test de nitrites n'est pas revenu à zéro, aucune introduction. Retrouvez la liste du matériel de démarrage, bactéries et tests en gouttes compris, calculée pour votre bac. #aquariophilie #cycledelazote #débutant" },
+
+  // Guide d'achat du filtre : quatre angles vers la même page, pour couvrir
+  // plusieurs recherches sans répéter le même visuel.
+  { id: "guide-filtre-liste", mise: "liste", ton: 2, kicker: "Guide d'achat",
+    punch: "Quel filtre pour votre aquarium ?",
+    items: ["Nano : éponge sur bulleur", "60 L : interne ou cascade", "100 L : interne puissant ou externe", "150 L et plus : externe"],
+    fond: "plantes-bleu",
+    vers: `${U}/guides/quel-filtre-aquarium`,
+    titre: "Quel filtre choisir pour son aquarium selon le volume",
+    description: "Quel filtre pour un aquarium ? Interne, externe, cascade ou éponge : le bon type dépend du volume du bac et de ses habitants. Le guide donne pour chaque taille, du nano au 300 litres, le débit à lire sur la boîte, les critères qui comptent après le débit et les erreurs qui font acheter trop petit. #aquariophilie #filtration #aquarium" },
+
+  { id: "guide-filtre-duel", mise: "duel", ton: 4, kicker: "Filtration",
+    punch: "Filtre interne ou externe ?",
+    gauche: { t: "Interne", s: "Jusqu'à 120 L" },
+    droite: { t: "Externe", s: "Dès 100 L" },
+    sub: "Silence, place dans le bac, entretien : ce qui départage.",
+    fond: "plante-racine",
+    vers: `${U}/guides/quel-filtre-aquarium`,
+    titre: "Filtre interne ou externe pour un aquarium : lequel choisir ?",
+    description: "Filtre interne ou externe ? En dessous de 100 litres, un bon filtre interne suffit. Au-delà, ou pour un bac planté, le filtre externe l'emporte : plus de masse filtrante, moins de bruit, rien dans le bac. Le guide compare aussi les filtres à cascade et à éponge, avec le débit à viser pour chaque taille de bac. #aquariophilie #filtration #aquascaping" },
+
+  { id: "guide-filtre-100l", mise: "stat", ton: 3, kicker: "Aquarium de 100 L",
+    punch: "Le débit à lire sur la boîte",
+    big: "500 L/h", sub: "Pour 4 brassages réels par heure, une fois le filtre garni.",
+    fond: "poisson-herbe",
+    vers: `${U}/guides/quel-filtre-aquarium`,
+    titre: "Quel débit de filtre pour un aquarium de 100 litres ?",
+    description: "Quel débit de filtre pour un aquarium de 100 litres ? Le bac contient environ 80 litres d'eau une fois installé. Pour quatre brassages réels par heure, visez un filtre annoncé autour de 500 L/h, car le débit du carton est mesuré à vide. Le guide donne le chiffre pour chaque taille de bac, du nano au 300 litres. #aquarium100l #filtration #aquariophilie" },
+
+  { id: "guide-filtre-nuit", mise: "question", ton: 1, kicker: "Erreur fréquente",
+    punch: "Éteindre le filtre la nuit ?",
+    sub: "Jamais. Les bactéries du filtre meurent en quelques heures sans courant.",
+    fond: "banc-plante",
+    vers: `${U}/guides/quel-filtre-aquarium`,
+    titre: "Peut-on éteindre le filtre de son aquarium la nuit ?",
+    description: "Peut-on éteindre le filtre d'un aquarium la nuit pour le bruit ? Non : les bactéries qui transforment les déchets des poissons vivent dans les masses filtrantes et ont besoin d'un courant oxygéné en continu. Le guide explique comment choisir un filtre silencieux et l'entretenir sans détruire sa colonie. #aquariophilie #entretien #débutant" },
 ];
 
 export const CREDITS: Record<string, string> = {
