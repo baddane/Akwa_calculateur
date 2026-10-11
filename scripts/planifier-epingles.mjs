@@ -34,6 +34,7 @@ const TABLEAU = process.env.TABLEAU_PINTEREST ?? "Aquariophilie";
 // type de lui-même. lib/epingles.ts reste ainsi la seule référence, sans risque
 // de désynchronisation entre l'image rendue et la ligne du CSV.
 const { EPINGLES } = await import(new URL("../lib/epingles.ts", import.meta.url));
+const { publications, imageEpingle, sansMotsCles } = await import(new URL("../lib/publication.ts", import.meta.url));
 
 // Trois jours par semaine, espacés : Pinterest pénalise les rafales.
 const JOURS = [1, 3, 5]; // lundi, mercredi, vendredi
@@ -57,15 +58,13 @@ function dates(n) {
 const motsCles = (e) => [...e.description.matchAll(/#(\S+)/g)].map((m) => m[1]).join(", ");
 const q = (v) => `"${String(v).replace(/"/g, '""')}"`;
 
-const image = (e, i) => `${MEDIA_BASE}/${String(i + 1).padStart(2, "0")}-${e.id}.jpg`;
-const sansMotsCles = (e) => e.description.replace(/\s*#\S+/g, "").trim();
-// Texte alternatif : ce qu'on lit sur l'image.
-const alt = (e) => [e.punch, e.sub].filter(Boolean).map((t) => /[.!?…]$/.test(t) ? t : `${t}.`).join(" ");
+const image = (e, i) => imageEpingle(e, i, MEDIA_BASE);
 
 if (TAMPERMONKEY) {
+  // Même contenu et même ordre que le flux /epingles.json.
   const lignes = [
     ["Titre", "Description", "Lien", "Image URL", "Tableau", "Alt Text"].join(","),
-    ...EPINGLES.map((e, i) => [e.titre, sansMotsCles(e), e.vers, image(e, i), TABLEAU, alt(e)].map(q).join(",")),
+    ...publications(EPINGLES, MEDIA_BASE, TABLEAU).map((p) => [p.titre, p.description, p.lien, p.image, p.tableau, p.alt].map(q).join(",")),
   ];
   writeFileSync(SORTIE, "\ufeff" + lignes.join("\r\n") + "\r\n", "utf8");
   console.log(`${EPINGLES.length} épingles écrites dans ${SORTIE}, pour le tableau « ${TABLEAU} ».`);

@@ -15,6 +15,8 @@ export type Epingle = {
   vers: string;           // page de destination
   titre: string;          // titre Pinterest, ~60 caractères utiles
   description: string;    // description Pinterest, riche en mots-clés
+  /** Publiée avant les autres si plus élevée (0 par défaut). */
+  priorite?: number;
 };
 
 const U = "https://www.aquametre.fr";
@@ -186,7 +188,7 @@ export const EPINGLES: Epingle[] = [
 
   // Guide d'achat du filtre : quatre angles vers la même page, pour couvrir
   // plusieurs recherches sans répéter le même visuel.
-  { id: "guide-filtre-liste", mise: "liste", ton: 2, kicker: "Guide d'achat",
+  { id: "guide-filtre-liste", priorite: 1, mise: "liste", ton: 2, kicker: "Guide d'achat",
     punch: "Quel filtre pour votre aquarium ?",
     items: ["Nano : éponge sur bulleur", "60 L : interne ou cascade", "100 L : interne puissant ou externe", "150 L et plus : externe"],
     fond: "plantes-bleu",
@@ -194,7 +196,7 @@ export const EPINGLES: Epingle[] = [
     titre: "Quel filtre choisir pour son aquarium selon le volume",
     description: "Quel filtre pour un aquarium ? Interne, externe, cascade ou éponge : le bon type dépend du volume du bac et de ses habitants. Le guide donne pour chaque taille, du nano au 300 litres, le débit à lire sur la boîte, les critères qui comptent après le débit et les erreurs qui font acheter trop petit. #aquariophilie #filtration #aquarium" },
 
-  { id: "guide-filtre-duel", mise: "duel", ton: 4, kicker: "Filtration",
+  { id: "guide-filtre-duel", priorite: 1, mise: "duel", ton: 4, kicker: "Filtration",
     punch: "Filtre interne ou externe ?",
     gauche: { t: "Interne", s: "Jusqu'à 120 L" },
     droite: { t: "Externe", s: "Dès 100 L" },
@@ -204,7 +206,7 @@ export const EPINGLES: Epingle[] = [
     titre: "Filtre interne ou externe pour un aquarium : lequel choisir ?",
     description: "Filtre interne ou externe ? En dessous de 100 litres, un bon filtre interne suffit. Au-delà, ou pour un bac planté, le filtre externe l'emporte : plus de masse filtrante, moins de bruit, rien dans le bac. Le guide compare aussi les filtres à cascade et à éponge, avec le débit à viser pour chaque taille de bac. #aquariophilie #filtration #aquascaping" },
 
-  { id: "guide-filtre-100l", mise: "stat", ton: 3, kicker: "Aquarium de 100 L",
+  { id: "guide-filtre-100l", priorite: 1, mise: "stat", ton: 3, kicker: "Aquarium de 100 L",
     punch: "Le débit à lire sur la boîte",
     big: "500 L/h", sub: "Pour 4 brassages réels par heure, une fois le filtre garni.",
     fond: "poisson-herbe",
@@ -212,7 +214,7 @@ export const EPINGLES: Epingle[] = [
     titre: "Quel débit de filtre pour un aquarium de 100 litres ?",
     description: "Quel débit de filtre pour un aquarium de 100 litres ? Le bac contient environ 80 litres d'eau une fois installé. Pour quatre brassages réels par heure, visez un filtre annoncé autour de 500 L/h, car le débit du carton est mesuré à vide. Le guide donne le chiffre pour chaque taille de bac, du nano au 300 litres. #aquarium100l #filtration #aquariophilie" },
 
-  { id: "guide-filtre-nuit", mise: "question", ton: 1, kicker: "Erreur fréquente",
+  { id: "guide-filtre-nuit", priorite: 1, mise: "question", ton: 1, kicker: "Erreur fréquente",
     punch: "Éteindre le filtre la nuit ?",
     sub: "Jamais. Les bactéries du filtre meurent en quelques heures sans courant.",
     fond: "banc-plante",

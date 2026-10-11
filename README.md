@@ -40,6 +40,10 @@ Alternative à l'import en masse (`npm run epingles:csv`) : le script
    (tableau « Aquariophilie » par défaut, variable `TABLEAU_PINTEREST` pour changer).
 3. Ouvrir pinterest.com, charger le CSV dans le panneau « Auto-Pin », Vérifier, Publier.
 
+Par défaut, le script lit https://www.aquametre.fr/epingles.json et publie seul toute épingle
+non encore publiée : ajouter des épingles = les ajouter dans `lib/epingles.ts` et déployer
+(champ `priorite` pour les faire passer devant). Le CSV reste disponible, case décochée.
+
 Garde-fous : 5 pins par jour, 1 h 30 à 3 h entre deux, de 9 h à 21 h, un seul onglet à la fois.
 La file reprend seule le lendemain si l'onglet reste ouvert (sinon « Reprendre ») ; un pin déjà publié d'après le journal
 n'est jamais republié. Laisser l'onglet ouvert pendant la publication.
