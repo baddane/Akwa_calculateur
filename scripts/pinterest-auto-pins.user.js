@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pinterest - Publication automatique de pins
 // @namespace    baddane.tools
-// @version      1.7
+// @version      1.8
 // @require      https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
 // @description  Publie les pins d'aquametre.fr (ou d'un fichier Excel) automatiquement (max 5/jour, étalés de 9 h à 21 h), avec délais aléatoires pour éviter le bannissement.
 // @match        https://www.pinterest.com/*
@@ -48,6 +48,7 @@ LIMITES DE SÉCURITÉ :
 (function () {
   'use strict';
 
+  const VERSION = (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.version) || '?';
   const KEY = 'pin-auto-etat';
   const KEY_JOURNAL = 'pin-auto-journal';
   const KEY_QUOTA = 'pin-auto-quota';
@@ -393,7 +394,7 @@ LIMITES DE SÉCURITÉ :
   panel.id = 'pin-ap';
   const q = getQuota();
   panel.innerHTML = `
-    <header><span>📌 Auto-Pin (${q.count}/${MAX_PAR_JOUR} aujourd'hui)</span><span id="pin-ap-min">–</span></header>
+    <header><span>📌 Auto-Pin (${q.count}/${MAX_PAR_JOUR} aujourd'hui)</span><span><small style="opacity:.7;font-weight:400;margin-right:10px">v${VERSION}</small><span id="pin-ap-min">–</span></span></header>
     <div class="b" id="pin-ap-body">
       <div class="quota" id="pin-ap-quota">📊 Quota du jour : <b>${q.count}</b> / ${MAX_PAR_JOUR} pins${q.count >= MAX_PAR_JOUR ? ' — <span style="color:#C62828">LIMITE ATTEINTE, reprenez demain</span>' : ''}</div>
       <div class="info" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -477,11 +478,11 @@ LIMITES DE SÉCURITÉ :
   // ---------- Tableaux Pinterest ----------
   // Associe à chaque pin l'identifiant de son tableau ; renvoie les noms
   // introuvables et la liste des tableaux disponibles pour les afficher.
-  // Nom de tableau comparable : Pinterest remplace l'apostrophe droite par
-  // l'apostrophe typographique (« Poissons d’aquarium »), et un espace en trop
-  // ou une majuscule suffisaient à rendre le tableau introuvable.
-  const nomTableau = n => String(n || '').normalize('NFC').replace(/[\u2018\u2019\u02BC`´]/g, "'")
-    .replace(/[\u00A0\u202F]/g, ' ').replace(/\s+/g, ' ').replace(/\s*:\s*/g, ' : ').trim().toLowerCase();
+  // Nom de tableau comparable sur ses seules lettres et chiffres : Pinterest
+  // réécrit la ponctuation (apostrophe typographique, espaces insécables…), et
+  // un seul caractère différent rendait le tableau introuvable.
+  const nomTableau = n => String(n || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]/g, '');
 
   async function resoudreTableaux(pins) {
     boards = await getBoards();
