@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         Pinterest - Publication automatique de pins
 // @namespace    baddane.tools
-// @version      1.8
+// @version      1.8.1
 // @require      https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
+// @updateURL    https://raw.githubusercontent.com/baddane/Akwa_calculateur/main/scripts/pinterest-auto-pins.user.js
+// @downloadURL  https://raw.githubusercontent.com/baddane/Akwa_calculateur/main/scripts/pinterest-auto-pins.user.js
 // @description  Publie les pins d'aquametre.fr (ou d'un fichier Excel) automatiquement (max 5/jour, étalés de 9 h à 21 h), avec délais aléatoires pour éviter le bannissement.
 // @match        https://www.pinterest.com/*
 // @match        https://pinterest.com/*
