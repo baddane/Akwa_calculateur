@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pinterest - Publication automatique de pins
 // @namespace    baddane.tools
-// @version      1.1
+// @version      1.2
 // @require      https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
 // @description  Publie des pins automatiquement depuis un fichier Excel (max 10/jour), avec délais aléatoires pour éviter le bannissement.
 // @match        https://www.pinterest.com/*
@@ -72,7 +72,15 @@ LIMITES DE SÉCURITÉ :
   // ---------- Un seul onglet publie à la fois ----------
   // Deux onglets Pinterest ouverts reprenaient chacun la file au chargement et
   // publiaient en parallèle, doublant le rythme et le quota réel.
-  const ONGLET = Math.random().toString(36).slice(2);
+  // sessionStorage survit au rechargement de l'onglet : sans lui, un simple F5
+  // faisait passer l'onglet pour un autre et bloquait sa propre file.
+  const ONGLET = (() => {
+    try {
+      let id = sessionStorage.getItem('pin-auto-onglet');
+      if (!id) { id = Math.random().toString(36).slice(2); sessionStorage.setItem('pin-auto-onglet', id); }
+      return id;
+    } catch (e) { return Math.random().toString(36).slice(2); }
+  })();
   const BATTEMENT_MAX = 3 * 60 * 1000; // un onglet en arrière-plan ne bat qu'une fois par minute
   function prendreMain(s) {
     if (s.onglet && s.onglet !== ONGLET && Date.now() - (s.battement || 0) < BATTEMENT_MAX) return false;
@@ -532,7 +540,13 @@ LIMITES DE SÉCURITÉ :
   async function publier() {
     const s = charger();
     if (!s || !s.enCours) return;
-    if (!prendreMain(s)) { log('⏸ Un autre onglet Pinterest publie déjà cette file.'); majBoutons(); return; }
+    if (!prendreMain(s)) {
+      // L'autre onglet a peut-être été fermé : on retente quand son verrou expire.
+      log('⏸ Un autre onglet Pinterest publie déjà cette file. Reprise ici automatique s\'il est fermé.');
+      majBoutons();
+      setTimeout(publier, BATTEMENT_MAX);
+      return;
+    }
 
     while (s.i < s.pins.length) {
       if (!charger()?.enCours) break;
