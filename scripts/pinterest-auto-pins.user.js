@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Pinterest - Publication automatique de pins
 // @namespace    baddane.tools
-// @version      1.3
+// @version      1.4
 // @require      https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js
-// @description  Publie des pins automatiquement depuis un fichier Excel (max 10/jour), avec délais aléatoires pour éviter le bannissement.
+// @description  Publie des pins automatiquement depuis un fichier Excel (max 5/jour, étalés de 9 h à 21 h), avec délais aléatoires pour éviter le bannissement.
 // @match        https://www.pinterest.com/*
 // @match        https://pinterest.com/*
 // @match        https://*.pinterest.com/*
@@ -32,8 +32,9 @@ FORMAT DU FICHIER EXCEL (colonnes) :
 - Alt Text : texte alternatif pour l'accessibilité (optionnel)
 
 LIMITES DE SÉCURITÉ :
-- Maximum 10 pins par jour (compteur réinitialisé à minuit)
-- Délai aléatoire de 3 à 8 minutes entre chaque pin
+- Maximum 5 pins par jour (compteur réinitialisé à minuit)
+- Délai aléatoire de 1 h 30 à 3 h entre chaque pin, publication entre 9 h et 21 h
+  seulement : un rythme humain réparti sur la journée, pas une rafale
 - Pause automatique si Pinterest retourne une erreur
 */
 
@@ -43,9 +44,10 @@ LIMITES DE SÉCURITÉ :
   const KEY = 'pin-auto-etat';
   const KEY_JOURNAL = 'pin-auto-journal';
   const KEY_QUOTA = 'pin-auto-quota';
-  const MAX_PAR_JOUR = 10;
-  const DELAI_MIN = 3 * 60 * 1000; // 3 min
-  const DELAI_MAX = 8 * 60 * 1000; // 8 min
+  const MAX_PAR_JOUR = 5;
+  const DELAI_MIN = 90 * 60 * 1000;  // 1 h 30
+  const DELAI_MAX = 180 * 60 * 1000; // 3 h
+  const HEURE_DEBUT = 9, HEURE_FIN = 21; // plage de publication, heure locale
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
 
@@ -93,6 +95,17 @@ LIMITES DE SÉCURITÉ :
   }, 20000);
 
   // Erreur qui ne concerne que ce pin (image) : on le saute au lieu de tout arrêter.
+  // Ramène un instant dans la plage de publication : avant 9 h, au matin
+  // même ; après 21 h, au lendemain. Heure de départ tirée entre 9 h et 11 h
+  // pour ne pas publier chaque jour à la même minute.
+  function dansPlage(t) {
+    const d = new Date(t);
+    if (d.getHours() >= HEURE_DEBUT && d.getHours() < HEURE_FIN) return t;
+    if (d.getHours() >= HEURE_FIN) d.setDate(d.getDate() + 1);
+    d.setHours(HEURE_DEBUT, rand(0, 119), rand(0, 59), 0);
+    return d.getTime();
+  }
+
   const erreurImage = msg => Object.assign(new Error(msg), { image: true });
   function incrQuota() {
     const q = getQuota();
@@ -449,12 +462,12 @@ LIMITES DE SÉCURITÉ :
     const q = getQuota();
     const resteDuJour = MAX_PAR_JOUR - q.count;
     const aPublier = Math.min(pins.length, resteDuJour);
-    const tempsEstime = aPublier > 1 ? `${Math.round(aPublier * 5.5)} min environ` : '< 1 min';
+    const tempsEstime = aPublier > 1 ? `étalés sur la journée, ${Math.round((DELAI_MIN + DELAI_MAX) / 120000)} min en moyenne entre deux` : 'immédiat';
 
     log(`✅ ${pins.length} pin(s) prêt(s).\n` +
       `📊 Quota restant aujourd'hui : ${resteDuJour}\n` +
       `➡️ ${aPublier} pin(s) seront publiés maintenant (les autres demain)\n` +
-      `⏱️ Durée estimée : ${tempsEstime}\n\n` +
+      `⏱️ Rythme : ${tempsEstime}, de ${HEURE_DEBUT} h à ${HEURE_FIN} h\n\n` +
       pins.slice(0, 8).map(p => `• ${p.titre.slice(0, 35)} → ${p.boardName}`).join('\n') +
       (pins.length > 8 ? `\n… et ${pins.length - 8} autres` : '') +
       '\n\nCliquez « Publier » pour lancer.');
@@ -554,7 +567,8 @@ LIMITES DE SÉCURITÉ :
 
       // Délai anti-spam restant : enregistré, il survit à un rechargement de
       // page. Avant, recharger relançait le pin suivant au bout de 2 s.
-      const attente = (s.prochainA || 0) - Date.now();
+      s.prochainA = dansPlage(Math.max(s.prochainA || 0, Date.now()));
+      const attente = s.prochainA - Date.now();
       if (attente > 0) {
         const quand = attente > 60 * 60 * 1000
           ? `${new Date(s.prochainA).toDateString() === new Date().toDateString() ? 'aujourd\'hui' : 'demain'} à ${new Date(s.prochainA).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}. Laissez l'onglet ouvert et le PC allumé, sans mise en veille`
@@ -574,9 +588,8 @@ LIMITES DE SÉCURITÉ :
         // Quota atteint : la file reste active et repart d'elle-même le
         // lendemain, à une heure tirée au hasard entre 9 h et 11 h, si l'onglet
         // est resté ouvert. Avant, il fallait revenir cliquer « Reprendre ».
-        const demain = new Date(); demain.setDate(demain.getDate() + 1);
-        demain.setHours(9, rand(0, 119), rand(0, 59), 0);
-        s.prochainA = demain.getTime();
+        const demain = new Date(); demain.setDate(demain.getDate() + 1); demain.setHours(0, 0, 0, 0);
+        s.prochainA = dansPlage(demain.getTime());
         enregistrer(s);
         majQuotaUI();
         log(`📊 Limite de ${MAX_PAR_JOUR} pins atteinte pour aujourd'hui.\n${s.pins.length - s.i} pin(s) restant(s).`);
@@ -611,7 +624,7 @@ LIMITES DE SÉCURITÉ :
         majQuotaUI();
 
         s.i++;
-        s.prochainA = Date.now() + rand(DELAI_MIN, DELAI_MAX);
+        s.prochainA = dansPlage(Date.now() + rand(DELAI_MIN, DELAI_MAX));
         enregistrer(s);
         log(`✅ Pin ${s.i}/${s.pins.length} publié — « ${p.titre.slice(0, 40)} »`);
 

@@ -16,7 +16,7 @@
  * Avec --tampermonkey, écrit plutôt le fichier que charge le script
  * scripts/pinterest-auto-pins.user.js (colonnes Titre, Description, Lien,
  * Image URL, Tableau, Alt Text ; pas de date : le script publie au fil de l'eau,
- * 10 par jour au plus).
+ * 5 par jour, étalés de 9 h à 21 h).
  */
 import { writeFileSync } from "node:fs";
 
@@ -69,7 +69,7 @@ if (TAMPERMONKEY) {
   ];
   writeFileSync(SORTIE, "\ufeff" + lignes.join("\r\n") + "\r\n", "utf8");
   console.log(`${EPINGLES.length} épingles écrites dans ${SORTIE}, pour le tableau « ${TABLEAU} ».`);
-  console.log(`À charger dans le panneau Auto-Pin sur pinterest.com (10 par jour au plus).`);
+  console.log(`À charger dans le panneau Auto-Pin sur pinterest.com (5 par jour, étalés de 9 h à 21 h).`);
   process.exit(0);
 }
 
