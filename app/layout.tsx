@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="topnav">
               <Link href="/">Assistant</Link>
               <Link href="/calculateurs">Les 11 calculateurs</Link>
-              <Link href={`/guides/${GUIDES[0].slug}`}>Guides</Link>
+              <Link href="/guides">Guides</Link>
             </div>
           </div>
         </nav>

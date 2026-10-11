@@ -19,4 +19,12 @@ export const GUIDES: Guide[] = [
     outil: "filtration",
     maj: "2026-10-11",
   },
+  {
+    slug: "quel-chauffage-aquarium",
+    nom: "Quel chauffage choisir",
+    titre: "Quelle puissance de chauffage pour un aquarium ? Guide d'achat",
+    description: "Combien de watts pour votre aquarium selon son volume et la température de la pièce, quel type de chauffage choisir, où le placer et les erreurs qui le font lâcher en une saison.",
+    outil: "chauffage",
+    maj: "2026-10-11",
+  },
 ];

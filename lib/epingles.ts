@@ -221,6 +221,42 @@ export const EPINGLES: Epingle[] = [
     vers: `${U}/guides/quel-filtre-aquarium`,
     titre: "Peut-on éteindre le filtre de son aquarium la nuit ?",
     description: "Peut-on éteindre le filtre d'un aquarium la nuit pour le bruit ? Non : les bactéries qui transforment les déchets des poissons vivent dans les masses filtrantes et ont besoin d'un courant oxygéné en continu. Le guide explique comment choisir un filtre silencieux et l'entretenir sans détruire sa colonie. #aquariophilie #entretien #débutant" },
+
+  // Guide d'achat du chauffage. Les puissances suivent calcChauffage
+  // (eau à 25 °C) : à reprendre si la formule change.
+  { id: "guide-chauffage-liste", priorite: 1, mise: "liste", ton: 3, kicker: "Pièce à 19 °C, eau à 25 °C",
+    punch: "Quel chauffage pour votre aquarium ?",
+    items: ["60 L : 50 W", "100 L : 75 W", "150 à 200 L : 150 W", "300 L : 300 W, ou deux chauffages"],
+    fond: "poisson-rouge",
+    vers: `${U}/guides/quel-chauffage-aquarium`,
+    titre: "Quelle puissance de chauffage pour son aquarium selon le volume",
+    description: "Quelle puissance de chauffage pour un aquarium ? Comptez environ 0,15 watt par litre et par degré d'écart entre la pièce et l'eau, puis prenez le palier du commerce juste au-dessus. Le guide donne la puissance pour chaque taille de bac, du nano au 300 litres, selon la température de votre pièce en hiver. #aquariophilie #chauffage #aquarium" },
+
+  { id: "guide-chauffage-piece", priorite: 1, mise: "duel", ton: 1, kicker: "Même bac de 100 L",
+    punch: "Ce n'est pas le volume qui décide",
+    gauche: { t: "50 W", s: "Salon à 21 °C" },
+    droite: { t: "150 W", s: "Pièce à 16 °C" },
+    sub: "C'est l'écart entre la pièce et l'eau qui fixe la puissance.",
+    fond: "escargot",
+    vers: `${U}/guides/quel-chauffage-aquarium`,
+    titre: "Chauffage d'aquarium : pourquoi la pièce compte plus que le volume",
+    description: "Un même aquarium de 100 litres demande 50 W dans un salon à 21 °C et 150 W dans une pièce qui descend à 16 °C. Le chauffage compense la perte de chaleur, qui dépend de l'écart entre l'air et l'eau. Le guide donne la puissance selon votre bac et votre pièce, et les erreurs qui usent un chauffage en une saison. #aquariophilie #chauffage #débutant" },
+
+  { id: "guide-chauffage-sortir", priorite: 1, mise: "stat", ton: 4, kicker: "Sécurité",
+    punch: "Ne sortez jamais un chauffage branché",
+    big: "20 min", sub: "Débranchez, laissez refroidir dans l'eau, puis retirez-le. Le verre chaud éclate à l'air.",
+    fond: "plante-clair",
+    vers: `${U}/guides/quel-chauffage-aquarium`,
+    titre: "Chauffage d'aquarium : comment le sortir sans le casser",
+    description: "Un chauffage d'aquarium sorti de l'eau encore chaud peut éclater. Débranchez-le, laissez-le refroidir une vingtaine de minutes dans l'eau, puis retirez-le ; faites l'inverse pour l'installer. Le guide détaille le choix de la puissance, le placement et les sécurités à exiger à l'achat. #aquariophilie #entretien #sécurité" },
+
+  { id: "guide-chauffage-thermometre", priorite: 1, mise: "question", ton: 2, kicker: "Matériel",
+    punch: "Un thermomètre en plus du chauffage ?",
+    sub: "Oui. Le thermostat dérive avec les années : c'est la panne la plus fréquente.",
+    fond: "crevette",
+    vers: `${U}/guides/quel-chauffage-aquarium`,
+    titre: "Faut-il un thermomètre en plus du chauffage d'aquarium ?",
+    description: "Faut-il un thermomètre si le chauffage a un thermostat ? Oui : le cadran indique une consigne, pas une mesure, et le thermostat dérive avec les années jusqu'à rester bloqué allumé. Seul un thermomètre indépendant révèle la panne avant qu'elle ne cuise le bac. Le guide explique comment choisir et placer son chauffage. #aquariophilie #matériel #crevettes" },
 ];
 
 export const CREDITS: Record<string, string> = {

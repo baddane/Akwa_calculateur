@@ -81,7 +81,7 @@ export default function Page() {
       <header className="page-head">
         <div className="wrap">
           <nav className="fil">
-            <Link href="/">{SITE.nom}</Link> <span>/</span> Guides <span>/</span> {g.nom}
+            <Link href="/">{SITE.nom}</Link> <span>/</span> <Link href="/guides">Guides</Link> <span>/</span> {g.nom}
           </nav>
           <h1>Quel filtre pour votre aquarium ?</h1>
           <p>

@@ -97,7 +97,7 @@ export function SchemaGuide({ guide, faq }: { guide: import("@/lib/guides").Guid
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: SITE.nom, item: BASE },
-          { "@type": "ListItem", position: 2, name: "Guides", item: url },
+          { "@type": "ListItem", position: 2, name: "Guides", item: `${BASE}/guides` },
           { "@type": "ListItem", position: 3, name: guide.nom, item: url },
         ],
       }} />
