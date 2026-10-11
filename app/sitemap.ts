@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { OUTILS } from "@/lib/outils";
 import { SITE } from "@/lib/site";
+import { GUIDES } from "@/lib/guides";
 
 const BASE = SITE.url;
 
@@ -13,6 +14,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...OUTILS.map((o) => ({
       url: `${BASE}/calculateurs/${o.slug}`,
       lastModified: o.maj,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    ...GUIDES.map((g) => ({
+      url: `${BASE}/guides/${g.slug}`,
+      lastModified: g.maj,
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),

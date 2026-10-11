@@ -87,3 +87,39 @@ export function SchemaListe({ outils }: { outils: Outil[] }) {
     </>
   );
 }
+
+export function SchemaGuide({ guide, faq }: { guide: import("@/lib/guides").Guide; faq: Question[] }) {
+  const url = `${BASE}/guides/${guide.slug}`;
+  return (
+    <>
+      <Ld data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: SITE.nom, item: BASE },
+          { "@type": "ListItem", position: 2, name: "Guides", item: url },
+          { "@type": "ListItem", position: 3, name: guide.nom, item: url },
+        ],
+      }} />
+      <Ld data={{
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: guide.titre,
+        description: guide.description,
+        url,
+        dateModified: guide.maj,
+        inLanguage: "fr-FR",
+        publisher: { "@type": "Organization", name: SITE.nom, url: BASE },
+      }} />
+      <Ld data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faq.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.r },
+        })),
+      }} />
+    </>
+  );
+}

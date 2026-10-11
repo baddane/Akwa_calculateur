@@ -8,6 +8,7 @@ import { CONTENU } from "@/lib/contenu";
 import { SchemaOutil } from "@/components/Schema";
 import { Methode, Faq } from "@/components/Contenu";
 import { chargerVisuels } from "@/lib/catalogue";
+import { GUIDES } from "@/lib/guides";
 
 export function generateStaticParams() {
   return OUTILS.map((o) => ({ slug: o.slug }));
@@ -50,6 +51,12 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
       <main className="wrap">
         <Outil slug={o.slug} visuels={visuels} />
+
+        {GUIDES.filter((x) => x.outil === o.slug).map((x) => (
+          <p key={x.slug} style={{ marginTop: 22 }}>
+            Pour choisir le modèle : <Link href={`/guides/${x.slug}`} className="lnk-u">{x.nom} : le guide d&apos;achat</Link>
+          </p>
+        ))}
 
         <Methode paragraphes={c.methode} titre={`Comment se calcule ${o.nom.toLowerCase()}`} />
         <Faq questions={c.faq} />

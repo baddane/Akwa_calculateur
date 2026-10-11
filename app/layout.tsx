@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Spectral } from "next/font/google";
 import { OUTILS } from "@/lib/outils";
 import { SITE } from "@/lib/site";
+import { GUIDES } from "@/lib/guides";
+import Mesure from "@/components/Mesure";
 import "./globals.css";
 
 const spectral = Spectral({
@@ -43,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="topnav">
               <Link href="/">Assistant</Link>
               <Link href="/calculateurs">Les 11 calculateurs</Link>
+              <Link href={`/guides/${GUIDES[0].slug}`}>Guides</Link>
             </div>
           </div>
         </nav>
@@ -62,6 +65,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </ul>
                 </div>
               ))}
+              <div>
+                <h4>Guides d&apos;achat</h4>
+                <ul>
+                  {GUIDES.map((g) => (
+                    <li key={g.slug}><Link href={`/guides/${g.slug}`}>{g.nom}</Link></li>
+                  ))}
+                </ul>
+              </div>
             </div>
             <p><strong>En tant que Partenaire Amazon, je réalise un bénéfice sur les achats remplissant les conditions requises.</strong></p>
             <p>
@@ -74,6 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </p>
           </div>
         </footer>
+        <Mesure />
       </body>
     </html>
   );
